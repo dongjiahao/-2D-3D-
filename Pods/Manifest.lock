@@ -1,0 +1,17 @@
+PODS:
+  - GPUImage (0.1.7)
+  - OpenCV (3.2.0):
+    - OpenCV/Dynamic (= 3.2.0)
+  - OpenCV/Dynamic (3.2.0)
+
+DEPENDENCIES:
+  - GPUImage
+  - OpenCV
+
+SPEC CHECKSUMS:
+  GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
+  OpenCV: 0f7ab403d1e81769bc6f4f524c3c6928ecb1fdb8
+
+PODFILE CHECKSUM: 69faed92d8d5c5e01551cd8d7ca81c02756cd41a
+
+COCOAPODS: 1.2.1

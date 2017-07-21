@@ -1,0 +1,155 @@
+//
+//  SceneView.swift
+//  作死
+//
+//  Created by 董嘉豪 on 2017/7/21.
+//  Copyright © 2017年 董嘉豪. All rights reserved.
+//
+
+import UIKit
+import QuartzCore
+import SceneKit
+
+class SceneView: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let scene = SCNScene(named: "a.scnassets/a.scn")!
+        
+        //创建路径
+        let linePath = UIBezierPath()
+        //起点
+        let start = CGPoint(x: list.head!.val.p!.x / 100, y: list.head!.val.p!.y / 100)
+        linePath.move(to: start)
+        //添加其他点
+        repeat {
+            list.head = list.head?.next
+            linePath.addLine(to: CGPoint(x: list.head!.val.p!.x / 100, y: list.head!.val.p!.y / 100))
+        } while list.head!.next != nil
+        
+        //设置底面和高
+        let shape: SCNShape = SCNShape(path: linePath, extrusionDepth: 1)
+        
+        let node: SCNNode = SCNNode(geometry: shape)
+        //在场景中添加物体
+        scene.rootNode.addChildNode(node)
+        
+        // 为场景创建并添加一个新的照相机
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        scene.rootNode.addChildNode(cameraNode)
+        
+        let t: Float = pow((Float(pow(Float(xMax!), 2) + pow(Float(yMax!), 2))), 0.5)
+        
+        // 定位照相机
+        cameraNode.position = SCNVector3(x: 0, y:0, z: t / 10)
+        
+        // 为场景创建并添加一个新的点光源
+        // Omni Light类似于吊灯
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .omni
+        lightNode.position = SCNVector3(x: t / 10, y: t / 10, z: t / 10)
+        scene.rootNode.addChildNode(lightNode)
+        
+        // 为场景创建并添加一个新的环境光源
+        // Ambient Light是模拟漫反射的一种光源。所有对象的底光源。
+        // 它能将灯光均匀地照射在场景中每个物体上面，在使用Ambient Light时可以忽略方向和角度，只考虑光源的位置。
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        ambientLightNode.light!.color = UIColor.darkGray
+        scene.rootNode.addChildNode(ambientLightNode)
+        
+        // 声明 the SCNView
+        let scnView = self.view as! SCNView
+        
+        // set the scene to the view
+        scnView.scene = scene
+        
+        // 允许用户操纵照相机
+        scnView.allowsCameraControl = true
+        
+        // 显示统计fps和时间等信息
+        scnView.showsStatistics = true
+        
+        // 为 the view 设置背景颜色
+        scnView.backgroundColor = UIColor.black
+        
+        // 添加一个手势识别器
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        scnView.addGestureRecognizer(tapGesture)
+        
+    }
+    
+    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+        // 声明 the SCNView
+        let scnView = self.view as! SCNView
+        
+        // check what nodes are tapped
+        let p = gestureRecognize.location(in: scnView)
+        let hitResults = scnView.hitTest(p, options: [:])
+        // 检查我们点击至少一个对象
+        if hitResults.count > 0 {
+            // 声明第一个被点击的对象
+            let result: AnyObject = hitResults[0]
+            
+            // 获取材料                     几何
+            let material = result.node!.geometry!.firstMaterial!
+            
+            // 高光
+            SCNTransaction.begin()
+            // 动画时间
+            SCNTransaction.animationDuration = 0.5
+            
+            // on completion - unhighlight
+            SCNTransaction.completionBlock = {
+                SCNTransaction.begin()
+                SCNTransaction.animationDuration = 0.5
+                
+                material.emission.contents = UIColor.black
+                
+                SCNTransaction.commit()
+            }
+            
+            material.emission.contents = UIColor.red
+            
+            SCNTransaction.commit()
+        }
+        
+        // Do any additional setup after loading the view.
+    }
+    
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return .allButUpsideDown
+        } else {
+            return .all
+        }
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
