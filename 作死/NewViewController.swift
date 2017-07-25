@@ -100,7 +100,7 @@ class CGView: UIView {
                         //记录图片 s 的信息到矩阵 前为行数后为列数
                         matrix![j / 2,i / 2] = true
                         
-                        if (i + 1) % 4 == 0 && (j + 1) % 4 == 0 {
+                        if i % 4 == 0 && j % 4 == 0 {
                             path.move(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
                             path.addLine(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset + 1), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
                             //添加路径到图形上下文
