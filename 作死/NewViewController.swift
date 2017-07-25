@@ -8,11 +8,6 @@
 
 import UIKit
 
-//var minx: Int = Int(image.size.width)
-//var maxx: Int = 0
-//var miny: Int = Int(image.size.height)
-//var maxy: Int = 0
-
 class NewViewController: UIViewController {
     
     func jump() {
@@ -83,11 +78,11 @@ class CGView: UIView {
         //创建并设置路径
         let path = CGMutablePath()
         
-        matrix = Matrix<Bool>(rows: Int(s!.size.height), columns: Int(s!.size.width), example: false)
+        matrix = Matrix<Bool>(rows: Int(s!.size.height / 2), columns: Int(s!.size.width / 2), example: false)
         start = CACurrentMediaTime()
-        //取样间隔为1 先列后行
-        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 1) {
-            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 1) {
+        //取样间隔为2 先列后行
+        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 2) {
+            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 2) {
                 //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
                 if s!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
                     //第二层门槛，起到medianBlur(中值滤波)的作用
@@ -103,7 +98,7 @@ class CGView: UIView {
                     
                     if flag >= 0.3 {
                         //记录图片 s 的信息到矩阵 前为行数后为列数
-                        matrix?[j,i] = true
+                        matrix![j / 2,i / 2] = true
                         
                         if (i + 1) % 4 == 0 && (j + 1) % 4 == 0 {
                             path.move(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
