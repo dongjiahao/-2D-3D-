@@ -11,8 +11,11 @@ import Photos
 
 var image: UIImage? = UIImage()
 var s: UIImage? = UIImage()
+//二维矩阵储存：像素化的图片再经筛选后的点
 var matrix: Matrix<Bool>? = nil
 var list: List = List()
+//时间测试
+var start: CFAbsoluteTime = 0
 
 extension ViewController {
     var selectorController: UIAlertController {

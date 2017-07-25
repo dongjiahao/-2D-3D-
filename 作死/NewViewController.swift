@@ -82,9 +82,12 @@ class CGView: UIView {
         
         //创建并设置路径
         let path = CGMutablePath()
-        //取样间隔
-        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 4) {
-            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 4) {
+        
+        matrix = Matrix<Bool>(rows: Int(s!.size.height), columns: Int(s!.size.width), example: false)
+        start = CACurrentMediaTime()
+        //取样间隔为1 先列后行
+        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 1) {
+            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 1) {
                 //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
                 if s!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
                     //第二层门槛，起到medianBlur(中值滤波)的作用
@@ -99,35 +102,29 @@ class CGView: UIView {
                     flag /= 25
                     
                     if flag >= 0.3 {
-                        path.move(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
-                        path.addLine(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset + 1), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
-                        //添加路径到图形上下文
-                        context.addPath(path)
-                        //设置笔触颜色
-                        context.setStrokeColor(UIColor.black.cgColor)
-                        //设置笔触宽度
-                        context.setLineWidth(lineWidth)
-                        //绘制路径
-                        context.strokePath()
+                        //记录图片 s 的信息到矩阵 前为行数后为列数
+                        matrix?[j,i] = true
                         
-                        //                    if i > maxx {
-                        //                        maxx = i
-                        //                    }
-                        //                    if i < minx {
-                        //                        minx = i
-                        //                    }
-                        //                    if j > maxy {
-                        //                        maxy = j
-                        //                    }
-                        //                    if j < miny {
-                        //                        miny = j
-                        //                    }
+                        if (i + 1) % 4 == 0 && (j + 1) % 4 == 0 {
+                            path.move(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
+                            path.addLine(to: CGPoint(x: CGFloat(CGFloat(i) / 10 + lineAdjustOffset + 1), y: CGFloat(CGFloat(j) / 10 + lineAdjustOffset)))
+                            //添加路径到图形上下文
+                            context.addPath(path)
+                            //设置笔触颜色
+                            context.setStrokeColor(UIColor.black.cgColor)
+                            //设置笔触宽度
+                            context.setLineWidth(lineWidth)
+                            //绘制路径
+                            context.strokePath()
+                        }
                     }
                 }
                 
             }
         }
-//        print(maxx - minx)
-//        print(maxy - miny)
+        print("记录二维矩阵和绘图")
+        print(CACurrentMediaTime() - start)
+        //清理内存
+        s = nil
     }
 }

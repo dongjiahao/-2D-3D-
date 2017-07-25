@@ -100,8 +100,6 @@ class FXViewController: UIViewController {
         ne.addTarget(self, action: #selector(FXViewController.nextView), for:.touchUpInside)
         self.view.addSubview(ne)
         
-        //二维矩阵储存：像素化的图片再经筛选后的点
-        matrix = Matrix<Bool>(rows: Int(s!.size.height), columns: Int(s!.size.width), example: false)
         //可疑的顶点
         var point: [MyCGPoint]? = []
         
@@ -135,12 +133,9 @@ class FXViewController: UIViewController {
         //纵向
         func getSlopeZ(array: [CGPoint]) -> [CGFloat] {
             var slopeArray: [CGFloat] = []
-//            print("~~~~~~~~~~")
             for i in 0..<(array.count - 1) {
                 slopeArray.append(CGFloat(array[i].x - array[i + 1].x))
-//                print(array[i].x - array[i + 1].x)
             }
-//            print("~~~~~~~~~~")
             return slopeArray
         }
         
@@ -157,42 +152,12 @@ class FXViewController: UIViewController {
         //横向向
         func getSlopeH(array: [CGPoint]) -> [CGFloat] {
             var slopeArray: [CGFloat] = []
-//            print("~~~~~~~~~~")
             for i in 0..<(array.count - 1) {
                 slopeArray.append(CGFloat(array[i].y - array[i + 1].y))
-//                print(array[i].y - array[i + 1].y)
             }
-//            print("~~~~~~~~~~")
             return slopeArray
         }
-
-        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 1) {
-            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 1) {
-                //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
-                if s!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
-                    //第二层门槛，起到medianBlur(中值滤波)的作用
-                    var flag: CGFloat = 0
-                    
-                    for m in (i - 2)...(i + 2) {
-                        for n in (j - 2)...(j + 2) {
-                            flag += s!.getPixelColor(pos: CGPoint(x: m, y: n)).y
-                        }
-                    }
-                    
-                    flag /= 25
-                    
-                    if flag >= 0.3 {
-                        //记录图片 s 的信息到矩阵 前为行数后为列数
-                        matrix?[j,i] = true
-                    }
-                }
-                
-            }
-        }
-        
-        //清理内存
-        s = nil
-        
+        start = CACurrentMediaTime()
         for i in 1..<(matrix!.rows - 1) {
             for j in 1..<(matrix!.columns - 1) {
                 //第三层门槛，再次减少冲击信号的干扰
@@ -212,9 +177,12 @@ class FXViewController: UIViewController {
                 }
             }
         }
-
-        //上纵向筛选有点的列,并记录坐标
+        print(1)
+        print(CACurrentMediaTime() - start)
+        
+        start = CACurrentMediaTime()
         for j in 0..<matrix!.columns {
+            //上纵向筛选有点的列,并记录坐标
             for i in 0..<matrix!.rows {
                 guard !(matrix?[i,j])! else {
                     guard checkZ(a: j, array: arraySZ!) else {
@@ -225,10 +193,7 @@ class FXViewController: UIViewController {
                     continue
                 }
             }
-        }
-
-        //下纵向筛选有点的列,并记录坐标
-        for j in 0..<matrix!.columns {
+            //下纵向筛选有点的列,并记录坐标
             for i in (0...(matrix!.rows - 1)).reversed() {
                 guard !(matrix?[i,j])! else {
                     guard checkZ(a: j, array: arrayXZ!) else {
@@ -240,9 +205,12 @@ class FXViewController: UIViewController {
                 }
             }
         }
-
-        //左横向筛选有点的行,并记录坐标
+        print(2)
+        print(CACurrentMediaTime() - start)
+        
+        start = CACurrentMediaTime()
         for i in 0..<matrix!.rows {
+            //左横向筛选有点的行,并记录坐标
             for j in 0..<matrix!.columns {
                 guard !(matrix?[i,j])! else {
                     guard checkH(a: i, array: arrayZH!) else {
@@ -253,10 +221,7 @@ class FXViewController: UIViewController {
                     continue
                 }
             }
-        }
-
-        //右横向筛选有点的行,并记录坐标
-        for i in 0..<matrix!.rows {
+            //右横向筛选有点的行,并记录坐标
             for j in (0...(matrix!.columns - 1)).reversed() {
                 guard !(matrix?[i,j])! else {
                     guard checkH(a: i, array: arrayYH!) else {
@@ -268,14 +233,20 @@ class FXViewController: UIViewController {
                 }
             }
         }
-
+        print(3)
+        print(CACurrentMediaTime() - start)
+        
+        start = CACurrentMediaTime()
         //CGPoint数组排序
         arraySZ!.sort() { $1.y > $0.y }
         arrayXZ!.sort() { $1.y > $0.y }
         arrayZH!.sort() { $1.x > $0.x }
         arrayYH!.sort() { $1.x > $0.x }
         matrix = nil
+        print(4)
+        print(CACurrentMediaTime() - start)
         
+        start = CACurrentMediaTime()
         //获得斜率
         slopeSZ! = getSlopeZ(array: arraySZ!)
         slopeXZ! = getSlopeZ(array: arrayXZ!)
@@ -300,11 +271,16 @@ class FXViewController: UIViewController {
             }
             return newArray
         }
+        print(5)
+        print(CACurrentMediaTime() - start)
         
+        start = CACurrentMediaTime()
         slopeSZ = mean(slopeSZ!)
         slopeXZ = mean(slopeXZ!)
         slopeZH = mean(slopeZH!)
         slopeYH = mean(slopeYH!)
+        print(6)
+        print(CACurrentMediaTime() - start)
         
         //判断可疑的顶点规则：
         //1、首尾为顶点
@@ -350,10 +326,13 @@ class FXViewController: UIViewController {
             }
         }
         
+        start = CACurrentMediaTime()
         tip(arraySZ!, slopeSZ!)
         tip(arrayXZ!, slopeXZ!)
         tip(arrayZH!, slopeZH!)
         tip(arrayYH!, slopeYH!)
+        print(7)
+        print(CACurrentMediaTime() - start)
         
         //不在用了，释放内存
         arraySZ = nil
@@ -380,6 +359,7 @@ class FXViewController: UIViewController {
             }
         }
         
+        start = CACurrentMediaTime()
         //简化Point数组，把位置相近的点合为一个点
         for i in 0..<point!.count {
             temporary = []
@@ -401,6 +381,8 @@ class FXViewController: UIViewController {
                 simplePoint.append(CGPoint(x: meanY, y: meanX))
             }
         }
+        print(8)
+        print(CACurrentMediaTime() - start)
         
         temporary = nil
         point = nil
@@ -415,7 +397,8 @@ class FXViewController: UIViewController {
         xMax = simplePoint[0].x
         
         yMax = simplePoint[0].y
-
+        
+        start = CACurrentMediaTime()
         for i in 0..<simplePoint.count {
             if xMin! > simplePoint[i].x {
                 xMin = simplePoint[i].x
@@ -430,6 +413,8 @@ class FXViewController: UIViewController {
                 yMax = simplePoint[i].y
             }
         }
+        print(9)
+        print(CACurrentMediaTime() - start)
         
         xMax! -= xMin!
         yMax! -= yMin!
@@ -443,6 +428,7 @@ class FXViewController: UIViewController {
             o = (self.view.frame.width - 5 - 13 - 5) / xMax!
         }
         
+        start = CACurrentMediaTime()
         for i in 0..<simplePoint.count {
             simplePoint[i] = CGPoint(x: simplePoint[i].x - xMin!, y: simplePoint[i].y - yMin!)
             let button = MyButton(frame: CGRect(x: (simplePoint[i].x * o!) + 5, y: (simplePoint[i].y * o!) + 110, width: 13, height: 13))
@@ -453,6 +439,8 @@ class FXViewController: UIViewController {
             button.addTarget(self, action: #selector(FXViewController.awaitOrders(_ :)), for:.touchUpInside)
             self.view.addSubview(button)
         }
+        print(10)
+        print(CACurrentMediaTime() - start)
         
         xMin = nil
         yMin = nil
