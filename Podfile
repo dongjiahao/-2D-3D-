@@ -4,5 +4,4 @@
 use_frameworks!
 target '作死' do
 pod 'GPUImage'
-pod 'OpenCV'
 end
