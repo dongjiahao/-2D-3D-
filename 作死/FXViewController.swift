@@ -180,11 +180,55 @@ class FXViewController: UIViewController {
         print(1)
         print(CACurrentMediaTime() - start)
         
+        var l1: Bool = false
+        var l2: Bool = false
+        
+        func basicOperation() {
+            //        第一步：创建Operation
+            let op = Operation.init()
+            //        第二步：把要执行的代码放入operation中
+            op.completionBlock = {
+                
+                for i in 0..<matrix!.rows {
+                    //左横向筛选有点的行,并记录坐标
+                    for j in 0..<matrix!.columns {
+                        guard !matrix![i,j] else {
+                            guard checkH(a: i, array: arrayZH!) else {
+                                //x 代表行数，y 代表列数
+                                arrayZH!.append(CGPoint(x: i, y: j))
+                                continue
+                            }
+                            continue
+                        }
+                    }
+                    //右横向筛选有点的行,并记录坐标
+                    for j in (0...(matrix!.columns - 1)).reversed() {
+                        guard !matrix![i,j] else {
+                            guard checkH(a: i, array: arrayYH!) else {
+                                //x 代表行数，y 代表列数
+                                arrayYH!.append(CGPoint(x: i, y: j))
+                                continue
+                            }
+                            continue
+                        }
+                    }
+                }
+                l2 = true
+            }
+            //        第三步：创建OperationQueue
+            let opQueue = OperationQueue.init()
+            //        第四步：把Operation加入到线程中
+            opQueue.addOperation(op)
+        }
+        
         start = CACurrentMediaTime()
+        
+        basicOperation()
+        
         for j in 0..<matrix!.columns {
             //上纵向筛选有点的列,并记录坐标
             for i in 0..<matrix!.rows {
-                guard !(matrix?[i,j])! else {
+                guard !matrix![i,j] else {
                     guard checkZ(a: j, array: arraySZ!) else {
                         //x 代表行数，y 代表列数
                         arraySZ!.append(CGPoint(x: i, y: j))
@@ -195,7 +239,7 @@ class FXViewController: UIViewController {
             }
             //下纵向筛选有点的列,并记录坐标
             for i in (0...(matrix!.rows - 1)).reversed() {
-                guard !(matrix?[i,j])! else {
+                guard !matrix![i,j] else {
                     guard checkZ(a: j, array: arrayXZ!) else {
                         //x 代表行数，y 代表列数
                         arrayXZ!.append(CGPoint(x: i, y: j))
@@ -205,35 +249,11 @@ class FXViewController: UIViewController {
                 }
             }
         }
-        print(2)
-        print(CACurrentMediaTime() - start)
-        
-        start = CACurrentMediaTime()
-        for i in 0..<matrix!.rows {
-            //左横向筛选有点的行,并记录坐标
-            for j in 0..<matrix!.columns {
-                guard !(matrix?[i,j])! else {
-                    guard checkH(a: i, array: arrayZH!) else {
-                        //x 代表行数，y 代表列数
-                        arrayZH!.append(CGPoint(x: i, y: j))
-                        continue
-                    }
-                    continue
-                }
-            }
-            //右横向筛选有点的行,并记录坐标
-            for j in (0...(matrix!.columns - 1)).reversed() {
-                guard !(matrix?[i,j])! else {
-                    guard checkH(a: i, array: arrayYH!) else {
-                        //x 代表行数，y 代表列数
-                        arrayYH!.append(CGPoint(x: i, y: j))
-                        continue
-                    }
-                    continue
-                }
-            }
+        l1 = true
+        while !l1 || !l2 {
+            //等待
         }
-        print(3)
+        print(2)
         print(CACurrentMediaTime() - start)
         
         start = CACurrentMediaTime()
@@ -242,8 +262,8 @@ class FXViewController: UIViewController {
         arrayXZ!.sort() { $1.y > $0.y }
         arrayZH!.sort() { $1.x > $0.x }
         arrayYH!.sort() { $1.x > $0.x }
-        matrix = nil
-        print(4)
+        
+        print(3)
         print(CACurrentMediaTime() - start)
         
         start = CACurrentMediaTime()
@@ -271,7 +291,7 @@ class FXViewController: UIViewController {
             }
             return newArray
         }
-        print(5)
+        print(4)
         print(CACurrentMediaTime() - start)
         
         start = CACurrentMediaTime()
@@ -279,7 +299,7 @@ class FXViewController: UIViewController {
         slopeXZ = mean(slopeXZ!)
         slopeZH = mean(slopeZH!)
         slopeYH = mean(slopeYH!)
-        print(6)
+        print(5)
         print(CACurrentMediaTime() - start)
         
         //判断可疑的顶点规则：
@@ -331,7 +351,7 @@ class FXViewController: UIViewController {
         tip(arrayXZ!, slopeXZ!)
         tip(arrayZH!, slopeZH!)
         tip(arrayYH!, slopeYH!)
-        print(7)
+        print(6)
         print(CACurrentMediaTime() - start)
         
         //不在用了，释放内存
@@ -381,7 +401,7 @@ class FXViewController: UIViewController {
                 simplePoint.append(CGPoint(x: meanY, y: meanX))
             }
         }
-        print(8)
+        print(7)
         print(CACurrentMediaTime() - start)
         
         temporary = nil
@@ -413,7 +433,7 @@ class FXViewController: UIViewController {
                 yMax = simplePoint[i].y
             }
         }
-        print(9)
+        print(8)
         print(CACurrentMediaTime() - start)
         
         xMax! -= xMin!
@@ -439,12 +459,13 @@ class FXViewController: UIViewController {
             button.addTarget(self, action: #selector(FXViewController.awaitOrders(_ :)), for:.touchUpInside)
             self.view.addSubview(button)
         }
-        print(10)
+        print(9)
         print(CACurrentMediaTime() - start)
         
         xMin = nil
         yMin = nil
         o = nil
+        matrix = nil
 
         // Do any additional setup after loading the view.
     }
