@@ -100,6 +100,36 @@ class FXViewController: UIViewController {
         ne.addTarget(self, action: #selector(FXViewController.nextView), for:.touchUpInside)
         self.view.addSubview(ne)
         
+        matrix = Matrix<Bool>(rows: Int(s!.size.height / 2), columns: Int(s!.size.width / 2), example: false)
+        start = CACurrentMediaTime()
+        //取样间隔为2 先列后行
+        for i in stride(from: 0, to: Int(s!.size.width) - 1, by: 2) {
+            for j in stride(from: 0, to: Int(s!.size.height) - 1, by: 2) {
+                //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
+                if s!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
+                    //第二层门槛，起到medianBlur(中值滤波)的作用
+                    var flag: CGFloat = 0
+                    for m in (i - 2)...(i + 2) {
+                        for n in (j - 2)...(j + 2) {
+                            flag += s!.getPixelColor(pos: CGPoint(x: m, y: n)).y
+                        }
+                    }
+                    
+                    flag /= 25
+                    
+                    if flag >= 0.3 {
+                        //记录图片 s 的信息到矩阵 前为行数后为列数
+                        matrix![j / 2,i / 2] = true
+                    }
+                }
+                
+            }
+        }
+        print("记录二维矩阵和绘图")
+        print(CACurrentMediaTime() - start)
+        //清理内存
+        s = nil
+        
         //可疑的顶点
         var point: [MyCGPoint]? = []
         

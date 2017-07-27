@@ -12,7 +12,7 @@ import Photos
 
 class SobelEdgeDetection: UIViewController {
     
-    var imagePicture = GPUImagePicture()
+    var imagePicture: GPUImagePicture? = GPUImagePicture()
     
     
     func jump() {
@@ -22,7 +22,7 @@ class SobelEdgeDetection: UIViewController {
     func showImage() {
 
         let myStoryBoard = self.storyboard
-        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "NewViewController"))! as UIViewController
+        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "FXViewController"))! as UIViewController
         self.present(anotherView, animated: true, completion: nil)
 
     }
@@ -58,32 +58,39 @@ class SobelEdgeDetection: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let imageView = GPUImageView(frame: self.view.frame)
+        var imageView: GPUImageView? = GPUImageView(frame: self.view.frame)
         self.view = imageView
         imagePicture = GPUImagePicture(image: image!)
         image = nil
         
-        let gaussianBlurFilter = GPUImageGaussianBlurFilter()
+        var gaussianBlurFilter: GPUImageGaussianBlurFilter? = GPUImageGaussianBlurFilter()
         //模糊处理程度，值越大，噪声影响越小，但会少量降低边界清晰度
-        gaussianBlurFilter.texelSpacingMultiplier = 2
+        gaussianBlurFilter!.texelSpacingMultiplier = 2
 
-        let edgeDetectionFilter = GPUImageSobelEdgeDetectionFilter()
+        var edgeDetectionFilter: GPUImageSobelEdgeDetectionFilter? = GPUImageSobelEdgeDetectionFilter()
         //边界检测强度，值越大，边界线约清晰，但会少量增加噪声数量和强度
-        edgeDetectionFilter.edgeStrength = 4
+        edgeDetectionFilter!.edgeStrength = 4
 
-        imagePicture.addTarget(gaussianBlurFilter)
-        gaussianBlurFilter.addTarget(imageView as GPUImageInput)
-        imagePicture.processImage()
-        gaussianBlurFilter.useNextFrameForImageCapture()
-        s = gaussianBlurFilter.imageFromCurrentFramebuffer()
+        imagePicture!.addTarget(gaussianBlurFilter)
+        gaussianBlurFilter!.addTarget(imageView!)
+        imagePicture!.processImage()
+        gaussianBlurFilter!.useNextFrameForImageCapture()
+        s = gaussianBlurFilter!.imageFromCurrentFramebuffer()
+        
+        gaussianBlurFilter = nil
+        
 
         imagePicture = GPUImagePicture(image: s)
-        imagePicture.addTarget(edgeDetectionFilter)
-        edgeDetectionFilter.addTarget(imageView as GPUImageInput)
-        imagePicture.processImage()
+        imagePicture!.addTarget(edgeDetectionFilter)
+        edgeDetectionFilter!.addTarget(imageView!)
+        imagePicture!.processImage()
         //获取图片
-        edgeDetectionFilter.useNextFrameForImageCapture()
-        s = edgeDetectionFilter.imageFromCurrentFramebuffer()
+        edgeDetectionFilter!.useNextFrameForImageCapture()
+        s = edgeDetectionFilter!.imageFromCurrentFramebuffer()
+        
+        imageView = nil
+        edgeDetectionFilter = nil
+        imagePicture = nil
 
         let button: UIButton = UIButton(type: .system)
         button.frame = CGRect(x: 10, y: 10, width: 100, height: 50)

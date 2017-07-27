@@ -56,24 +56,6 @@
             </objects>
             <point key="canvasLocation" x="1743" y="124"/>
         </scene>
-        <!--New View Controller-->
-        <scene sceneID="AoB-7n-0XW">
-            <objects>
-                <viewController storyboardIdentifier="NewViewController" id="zpL-fO-wsg" customClass="NewViewController" customModule="作死" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="huO-ay-WMb"/>
-                        <viewControllerLayoutGuide type="bottom" id="7u9-7X-WvA"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="1yV-gk-iBM">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="o5U-Q6-t23" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2489" y="124"/>
-        </scene>
         <!--View Controller-->
         <scene sceneID="QbE-bL-B4q">
             <objects>
@@ -90,7 +72,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5fX-rd-3tZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3238" y="124"/>
+            <point key="canvasLocation" x="2506" y="124"/>
         </scene>
         <!--Scene View-->
         <scene sceneID="wZB-hy-f91">
@@ -103,7 +85,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aSV-OU-C4U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4001" y="122"/>
+            <point key="canvasLocation" x="3282" y="124"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="pTL-oP-yhZ">
