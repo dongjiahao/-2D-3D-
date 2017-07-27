@@ -125,7 +125,98 @@ class FXViewController: UIViewController {
                 
             }
         }
-        print("记录二维矩阵和绘图")
+        
+        var rowMin: Int = 0
+        var rowMax: Int = 0
+        var columnMin: Int = 0
+        var columnMax: Int = 0
+        
+        let seekRowMin = {
+            for i in 0..<matrix!.rows {
+                for j in 0..<matrix!.columns {
+                    if matrix![i,j] {
+                        rowMin = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        let seekRowMax = {
+            for i in (0..<matrix!.rows).reversed() {
+                for j in 0..<matrix!.columns {
+                    if matrix![i,j] {
+                        rowMax = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        let seekColumnMin = {
+            for i in 0..<matrix!.columns {
+                for j in 0..<matrix!.rows {
+                    if matrix![j,i] {
+                        columnMin = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        let seekColumnMax = {
+            for i in (0..<matrix!.columns).reversed() {
+                for j in 0..<matrix!.rows {
+                    if matrix![j,i] {
+                        columnMax = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        var l11: Bool = false
+        var l12: Bool = false
+        
+        func basicOperationOne() {
+            //        第一步：创建Operation
+            let op = Operation.init()
+            //        第二步：把要执行的代码放入operation中
+            op.completionBlock = {
+                
+                seekRowMax()
+                seekColumnMax()
+                l12 = true
+                
+            }
+            //        第三步：创建OperationQueue
+            let opQueue = OperationQueue.init()
+            //        第四步：把Operation加入到线程中
+            opQueue.addOperation(op)
+        }
+        
+        basicOperationOne()
+        
+        seekRowMin()
+        seekColumnMin()
+        l11 = true
+        while !l11 || !l12 {
+            //等待
+        }
+        
+        var newMatrix: Matrix<Bool>? = nil
+        newMatrix = Matrix<Bool>(rows: rowMax - rowMin + 1, columns: columnMax - columnMin + 1, example: false)
+        
+        for i in 0..<newMatrix!.rows {
+            for j in 0..<newMatrix!.columns {
+                newMatrix![i,j] = matrix![i + rowMin, j + columnMin]
+            }
+        }
+        
+        matrix = newMatrix
+        newMatrix = nil
+        
+        print("记录二维矩阵")
         print(CACurrentMediaTime() - start)
         //清理内存
         s = nil
@@ -210,10 +301,10 @@ class FXViewController: UIViewController {
         print(1)
         print(CACurrentMediaTime() - start)
         
-        var l1: Bool = false
-        var l2: Bool = false
+        var l21: Bool = false
+        var l22: Bool = false
         
-        func basicOperation() {
+        func basicOperationTwo() {
             //        第一步：创建Operation
             let op = Operation.init()
             //        第二步：把要执行的代码放入operation中
@@ -243,7 +334,7 @@ class FXViewController: UIViewController {
                         }
                     }
                 }
-                l2 = true
+                l22 = true
             }
             //        第三步：创建OperationQueue
             let opQueue = OperationQueue.init()
@@ -253,7 +344,7 @@ class FXViewController: UIViewController {
         
         start = CACurrentMediaTime()
         
-        basicOperation()
+        basicOperationTwo()
         
         for j in 0..<matrix!.columns {
             //上纵向筛选有点的列,并记录坐标
@@ -279,8 +370,8 @@ class FXViewController: UIViewController {
                 }
             }
         }
-        l1 = true
-        while !l1 || !l2 {
+        l21 = true
+        while !l21 || !l22 {
             //等待
         }
         print(2)
