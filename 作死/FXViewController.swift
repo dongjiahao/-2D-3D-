@@ -25,7 +25,7 @@ class FXViewController: UIViewController {
     var num: Int = 0  //记录添加的点数
     
     func awaitOrders(_ button: MyButton) {
-        if allow {
+        if allow && !button.red! {
             button.yellow = true
             candidate = button
             allow = false
@@ -90,7 +90,7 @@ class FXViewController: UIViewController {
                         flag /= 25
                         
                         if flag >= 0.3 {
-                            //记录图片 s 的信息到s的转置矩阵 前为行数后为列数
+                            //记录图片的信息到s的转置矩阵 前为行数后为列数
                             matrixCM![i / 2,j / 2] = true
                         }
                     }
@@ -290,7 +290,7 @@ class FXViewController: UIViewController {
         CM()
         
         //底面的数据分析
-        matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.height / 2), columns: Int(边缘检测后的底面!.size.width / 2), example: false)
+        matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.width / 2), columns: Int(边缘检测后的底面!.size.height / 2), example: false)
         start = CACurrentMediaTime()
         //取样间隔为2 先列后行
         for i in stride(from: 0, to: Int(边缘检测后的底面!.size.width) - 1, by: 2) {
@@ -308,8 +308,8 @@ class FXViewController: UIViewController {
                     flag /= 25
                     
                     if flag >= 0.3 {
-                        //记录图片 s 的信息到矩阵 前为行数后为列数
-                        matrixDM![j / 2,i / 2] = true
+                        //记录图片的信息到转置矩阵 前为行数后为列数
+                        matrixDM![i / 2,j / 2] = true
                     }
                 }
                 
