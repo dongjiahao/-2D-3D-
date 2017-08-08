@@ -1,16 +1,16 @@
 //
-//  ViewController.swift
+//  CeMian.swift
 //  作死
 //
-//  Created by 董嘉豪 on 2017/5/7.
+//  Created by 董嘉豪 on 2017/8/2.
 //  Copyright © 2017年 董嘉豪. All rights reserved.
 //
 
 import UIKit
 import Photos
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
     let imageView = UIImageView()
     
     func selector() {
@@ -44,10 +44,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let picker = UIImagePickerController()
             picker.delegate = self
             picker.sourceType = UIImagePickerControllerSourceType.camera
-//            picker.showsCameraControls = false
-//            let cameraTransform = CGAffineTransform(scaleX: 9, y: 16)
-//            picker.cameraViewTransform = cameraTransform
-//            picker.cameraOverlayView = self.view
+            //            picker.showsCameraControls = false
+            //            let cameraTransform = CGAffineTransform(scaleX: 9, y: 16)
+            //            picker.cameraViewTransform = cameraTransform
+            //            picker.cameraOverlayView = self.view
             self.present(picker, animated: true, completion: {
                 () -> Void in
             })
@@ -58,14 +58,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         //显示的图片，并且做处理
-        底面 = info[UIImagePickerControllerOriginalImage] as? UIImage
-        imageView.frame = CGRect(x: 0, y: (self.view.frame.height / 2) - (底面!.size.height * self.view.frame.width / 底面!.size.width) / 2, width: self.view.frame.width, height: 底面!.size.height * self.view.frame.width / 底面!.size.width)
-        imageView.image = 底面
+        侧面 = info[UIImagePickerControllerOriginalImage] as? UIImage
+        imageView.frame = CGRect(x: 0, y: (self.view.frame.height / 2) - (侧面!.size.height * self.view.frame.width / 侧面!.size.width) / 2, width: self.view.frame.width, height: 侧面!.size.height * self.view.frame.width / 侧面!.size.width)
+        imageView.image = 侧面
         
         if flag {
             // 保存图片到系统相册
             PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: 底面!)
+                PHAssetChangeRequest.creationRequestForAsset(from: 侧面!)
             }, completionHandler: { (isSuccess: Bool, error: NSError?) in
                 if isSuccess {
                     print("保存成功!")
@@ -81,25 +81,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             () -> Void in
         })
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let select: UIButton = UIButton(type: .system)
         select.frame = CGRect(x: 10, y: 10, width: 100, height: 50)
         select.setTitle("选择图片", for: UIControlState.normal)
-        select.addTarget(self, action: #selector(ViewController.selector), for:.touchUpInside)
+        select.addTarget(self, action: #selector(CeMian.selector), for:.touchUpInside)
         self.view.addSubview(select)
         
         self.view.addSubview(imageView)
         
         // Do any additional setup after loading the view, typically from a nib.
     }
+    
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
     }
-
+    */
 
 }
-

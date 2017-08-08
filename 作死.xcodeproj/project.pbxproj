@@ -16,6 +16,8 @@
 		8C2F063E1EBED091001E79A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C2F063C1EBED091001E79A7 /* LaunchScreen.storyboard */; };
 		8C2F06491EBED091001E79A7 /* __Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F06481EBED091001E79A7 /* __Tests.swift */; };
 		8C2F06541EBED091001E79A7 /* __UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F06531EBED091001E79A7 /* __UITests.swift */; };
+		8C4143151F31853B002156E4 /* CeMian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4143141F31853B002156E4 /* CeMian.swift */; };
+		8C4143171F31897E002156E4 /* ShowCeMianViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4143161F31897E002156E4 /* ShowCeMianViewController.swift */; };
 		8C83CFBD1F21B9DC001F7421 /* SceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C83CFBC1F21B9DC001F7421 /* SceneView.swift */; };
 		8C83CFC21F21BB27001F7421 /* a.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C83CFC11F21BB27001F7421 /* a.scnassets */; };
 		8CB777E41F1631D4004592E5 /* FXViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB777E31F1631D4004592E5 /* FXViewController.swift */; };
@@ -57,6 +59,8 @@
 		8C2F064F1EBED091001E79A7 /* 作死UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "作死UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C2F06531EBED091001E79A7 /* __UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = __UITests.swift; sourceTree = "<group>"; };
 		8C2F06551EBED091001E79A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8C4143141F31853B002156E4 /* CeMian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CeMian.swift; sourceTree = "<group>"; };
+		8C4143161F31897E002156E4 /* ShowCeMianViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowCeMianViewController.swift; sourceTree = "<group>"; };
 		8C83CFBC1F21B9DC001F7421 /* SceneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneView.swift; sourceTree = "<group>"; };
 		8C83CFC11F21BB27001F7421 /* a.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = a.scnassets; sourceTree = "<group>"; };
 		8CB777E31F1631D4004592E5 /* FXViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FXViewController.swift; sourceTree = "<group>"; };
@@ -127,7 +131,9 @@
 				8C2F06331EBED091001E79A7 /* AppDelegate.swift */,
 				8C115C0F1EC01F9D0074A66C /* File.swift */,
 				8C2F06351EBED091001E79A7 /* ViewController.swift */,
+				8C4143141F31853B002156E4 /* CeMian.swift */,
 				8C115C111EC0241A0074A66C /* SobelEdgeDetection.swift */,
+				8C4143161F31897E002156E4 /* ShowCeMianViewController.swift */,
 				8CB777E31F1631D4004592E5 /* FXViewController.swift */,
 				8C83CFBC1F21B9DC001F7421 /* SceneView.swift */,
 				8CC435281F1EE73F003F97CC /* MyPlayground.playground */,
@@ -361,6 +367,8 @@
 				8C83CFBD1F21B9DC001F7421 /* SceneView.swift in Sources */,
 				8C115C101EC01F9D0074A66C /* File.swift in Sources */,
 				8CB777E41F1631D4004592E5 /* FXViewController.swift in Sources */,
+				8C4143151F31853B002156E4 /* CeMian.swift in Sources */,
+				8C4143171F31897E002156E4 /* ShowCeMianViewController.swift in Sources */,
 				8C2F06341EBED091001E79A7 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

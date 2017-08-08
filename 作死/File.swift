@@ -9,15 +9,32 @@
 import Foundation
 import Photos
 
-var image: UIImage? = UIImage()
-var s: UIImage? = UIImage()
+//就是想体验一把中文变量，没别的想法。。。
+var 底面: UIImage? = UIImage()
+var 边缘检测后的底面: UIImage? = UIImage()
+var 侧面: UIImage? = UIImage()
+var 边缘检测后的侧面: UIImage? = UIImage()
 //二维矩阵储存：像素化的图片再经筛选后的点
-var matrix: Matrix<Bool>? = nil
+var matrixDM: Matrix<Bool>? = nil
+var matrixCM: Matrix<Bool>? = nil
 var list: List = List()
 //时间测试
 var start: CFAbsoluteTime = 0
 
 extension ViewController {
+    var selectorController: UIAlertController {
+        let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        // 取消按钮
+        controller.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        // 拍照选择
+        controller.addAction(UIAlertAction(title: "拍照选择", style: .default) { action in self.fromCamera() } )
+        // 相册选择
+        controller.addAction(UIAlertAction(title: "相册选择", style: .default) { action in self.fromPhotoLibrary() } )
+        return controller
+    }
+}
+
+extension CeMian {
     var selectorController: UIAlertController {
         let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         // 取消按钮

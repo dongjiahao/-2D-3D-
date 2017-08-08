@@ -16,24 +16,49 @@ class SceneView: UIViewController {
         super.viewDidLoad()
         let scene = SCNScene(named: "a.scnassets/a.scn")!
         
-        //创建路径
-        let linePath = UIBezierPath()
-        //起点
-        let start = CGPoint(x: list.head!.val.p!.x / 100, y: list.head!.val.p!.y / 100)
-        linePath.move(to: start)
-        //添加其他点
-        repeat {
-            list.head = list.head?.next
-            linePath.addLine(to: CGPoint(x: list.head!.val.p!.x / 100, y: list.head!.val.p!.y / 100))
-        } while list.head!.next != nil
+        //中心点
+        let centralPoint: CGPoint = CGPoint(x: xMax! / 2, y: yMax! / 2)
         
-        //设置底面和高
-        let shape: SCNShape = SCNShape(path: linePath, extrusionDepth: 1)
+        var widthMax = widthArray[0]
         
-        let node: SCNNode = SCNNode(geometry: shape)
-        //在场景中添加物体
-        scene.rootNode.addChildNode(node)
+        for i in 1..<widthArray.count {
+            if widthArray[i] > widthMax {
+                widthMax = widthArray[i]
+            }
+        }
         
+        let rate = 1 / widthMax
+        
+        for i in stride(from: 1, to: widthArray.count, by: 1) {
+            //~~~~~~~~~~~~~~~~~~~~
+            //创建路径
+            let linePath = UIBezierPath()
+            var target = list.head
+            var px = ((target!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
+//            var py = (centralPoint.y - (centralPoint.y - 0.5 * target!.val.p!.y * (widthArray[i] * rate))) / 1000
+            var py = ((target!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
+            //起点
+            let start = CGPoint(x: px, y: py)
+            linePath.move(to: start)
+            //添加其他点
+            repeat {
+                target = target!.next
+                px = ((target!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
+                py = ((target!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
+                linePath.addLine(to: CGPoint(x: px, y: py))
+            } while target!.next != nil
+            
+            //设置底面和高
+            let dh = CGFloat(xMax! * rateHW! / CGFloat(widthArray.count) / 333)
+            let shape: SCNShape = SCNShape(path: linePath, extrusionDepth: dh)
+            
+            let node: SCNNode = SCNNode(geometry: shape)
+            node.position = SCNVector3(0, 0, CGFloat(i - 1) * dh)
+            //在场景中添加物体
+            scene.rootNode.addChildNode(node)
+            //~~~~~~~~~~~~~~~~~~~~~~
+        }
+
         // 为场景创建并添加一个新的照相机
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -42,7 +67,7 @@ class SceneView: UIViewController {
         let t: Float = pow((Float(pow(Float(xMax!), 2) + pow(Float(yMax!), 2))), 0.5)
         
         // 定位照相机
-        cameraNode.position = SCNVector3(x: 0, y:0, z: t / 10)
+        cameraNode.position = SCNVector3(x: Float(xMax! / 2), y:Float(yMax! / 2), z: t)
         
         // 为场景创建并添加一个新的点光源
         // Omni Light类似于吊灯
