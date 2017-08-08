@@ -49,7 +49,7 @@ class SceneView: UIViewController {
             } while target!.next != nil
             
             //设置底面和高
-            let dh = CGFloat(xMax! * rateHW! / CGFloat(widthArray.count) / 333)
+            let dh = CGFloat((xMax! * rateHW! / CGFloat(widthArray.count)) / 1000)
             let shape: SCNShape = SCNShape(path: linePath, extrusionDepth: dh)
             
             let node: SCNNode = SCNNode(geometry: shape)
