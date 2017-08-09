@@ -17,7 +17,8 @@ class SceneView: UIViewController {
         let scene = SCNScene(named: "a.scnassets/a.scn")!
         
         //中心点
-        let centralPoint: CGPoint = CGPoint(x: xMax! / 2, y: yMax! / 2)
+        let centralPoint: CGPoint = CGPoint(x: xMax! / 2,
+                                            y: yMax! / 2)
         
         var widthMax = widthArray[0]
         
@@ -33,7 +34,7 @@ class SceneView: UIViewController {
             //~~~~~~~~~~~~~~~~~~~~
             //创建路径
             let linePath = UIBezierPath()
-            var target = list.head
+            var target = list!.head
             var px = ((target!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
 //            var py = (centralPoint.y - (centralPoint.y - 0.5 * target!.val.p!.y * (widthArray[i] * rate))) / 1000
             var py = ((target!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
@@ -53,11 +54,16 @@ class SceneView: UIViewController {
             let shape: SCNShape = SCNShape(path: linePath, extrusionDepth: dh)
             
             let node: SCNNode = SCNNode(geometry: shape)
-            node.position = SCNVector3(0, 0, CGFloat(i - 1) * dh)
+            node.position = SCNVector3(0,
+                                       0,
+                                       CGFloat(i - 1) * dh)
             //在场景中添加物体
             scene.rootNode.addChildNode(node)
             //~~~~~~~~~~~~~~~~~~~~~~
         }
+        
+        widthArray = []
+        list = nil
 
         // 为场景创建并添加一个新的照相机
         let cameraNode = SCNNode()
@@ -67,14 +73,18 @@ class SceneView: UIViewController {
         let t: Float = pow((Float(pow(Float(xMax!), 2) + pow(Float(yMax!), 2))), 0.5)
         
         // 定位照相机
-        cameraNode.position = SCNVector3(x: Float(xMax! / 2), y:Float(yMax! / 2), z: t)
+        cameraNode.position = SCNVector3(x: Float(xMax! / 2),
+                                         y:Float(yMax! / 2),
+                                         z: t)
         
         // 为场景创建并添加一个新的点光源
         // Omni Light类似于吊灯
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: t / 10, y: t / 10, z: t / 10)
+        lightNode.position = SCNVector3(x: t / 10,
+                                        y: t / 10,
+                                        z: t / 10)
         scene.rootNode.addChildNode(lightNode)
         
         // 为场景创建并添加一个新的环境光源

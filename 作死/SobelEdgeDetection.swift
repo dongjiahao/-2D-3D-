@@ -10,21 +10,20 @@ import UIKit
 import GPUImage
 import Photos
 
+//底面边缘检测
 class SobelEdgeDetection: UIViewController {
     
     var imagePicture: GPUImagePicture? = GPUImagePicture()
     
-    
+    //返回
     func jump() {
         self.presentingViewController!.dismiss(animated: true, completion: nil)
     }
     
     func showImage() {
-
         let myStoryBoard = self.storyboard
         let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "ShowCeMianViewController"))! as UIViewController
         self.present(anotherView, animated: true, completion: nil)
-
     }
     
     func sharePhoto() {
@@ -93,19 +92,28 @@ class SobelEdgeDetection: UIViewController {
         imagePicture = nil
 
         let button: UIButton = UIButton(type: .system)
-        button.frame = CGRect(x: 10, y: 10, width: 100, height: 50)
+        button.frame = CGRect(x: 10,
+                              y: 10,
+                              width: 100,
+                              height: 50)
         button.setTitle("返回", for: UIControlState.normal)
         button.addTarget(self, action: #selector(SobelEdgeDetection.jump), for:.touchUpInside)
         self.view.addSubview(button)
-
+        
         let next: UIButton = UIButton(type: .system)
-        next.frame = CGRect(x: 150, y: 10, width: 100, height: 50)
+        next.frame = CGRect(x: 150,
+                            y: 10,
+                            width: 100,
+                            height: 50)
         next.setTitle("下一步", for: UIControlState.normal)
         next.addTarget(self, action: #selector(SobelEdgeDetection.showImage), for:.touchUpInside)
         self.view.addSubview(next)
         
         let share: UIButton = UIButton(type: .system)
-        share.frame = CGRect(x: self.view.frame.width - 110, y: 10, width: 100, height: 50)
+        share.frame = CGRect(x: self.view.frame.width - 110,
+                             y: 10,
+                             width: 100,
+                             height: 50)
         share.setTitle("保存图片", for: UIControlState.normal)
         share.addTarget(self, action: #selector(SobelEdgeDetection.sharePhoto), for:.touchUpInside)
         self.view.addSubview(share)
@@ -125,16 +133,5 @@ class SobelEdgeDetection: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -10,6 +10,7 @@ import UIKit
 import GPUImage
 import Photos
 
+//侧面边缘检测
 class ShowCeMianViewController: UIViewController {
 
     
@@ -70,7 +71,7 @@ class ShowCeMianViewController: UIViewController {
         
         var edgeDetectionFilter: GPUImageSobelEdgeDetectionFilter? = GPUImageSobelEdgeDetectionFilter()
         //边界检测强度，值越大，边界线约清晰，但会少量增加噪声数量和强度
-        edgeDetectionFilter!.edgeStrength = 4
+        edgeDetectionFilter!.edgeStrength = 6
         
         imagePicture!.addTarget(gaussianBlurFilter)
         gaussianBlurFilter!.addTarget(imageView!)
@@ -94,19 +95,28 @@ class ShowCeMianViewController: UIViewController {
         imagePicture = nil
         
         let button: UIButton = UIButton(type: .system)
-        button.frame = CGRect(x: 10, y: 10, width: 100, height: 50)
+        button.frame = CGRect(x: 10,
+                              y: 10,
+                              width: 100,
+                              height: 50)
         button.setTitle("返回", for: UIControlState.normal)
         button.addTarget(self, action: #selector(ShowCeMianViewController.jump), for:.touchUpInside)
         self.view.addSubview(button)
         
         let next: UIButton = UIButton(type: .system)
-        next.frame = CGRect(x: 150, y: 10, width: 100, height: 50)
+        next.frame = CGRect(x: 150,
+                            y: 10,
+                            width: 100,
+                            height: 50)
         next.setTitle("下一步", for: UIControlState.normal)
         next.addTarget(self, action: #selector(ShowCeMianViewController.showImage), for:.touchUpInside)
         self.view.addSubview(next)
         
         let share: UIButton = UIButton(type: .system)
-        share.frame = CGRect(x: self.view.frame.width - 110, y: 10, width: 100, height: 50)
+        share.frame = CGRect(x: self.view.frame.width - 110,
+                             y: 10,
+                             width: 100,
+                             height: 50)
         share.setTitle("保存图片", for: UIControlState.normal)
         share.addTarget(self, action: #selector(ShowCeMianViewController.sharePhoto), for:.touchUpInside)
         self.view.addSubview(share)

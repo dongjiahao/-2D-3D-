@@ -9,14 +9,18 @@
 import UIKit
 import Photos
 
+//获取底面
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    //用来展示所选底面的UIImageView
     let imageView = UIImageView()
     
+    //选择器调用函数，三个选项“拍照选择”、“相册选择”、“取消”，用于选择底面的图片
     func selector() {
         present(selectorController, animated: true, completion: nil)
     }
     
+    //相册调用函数
     func fromPhotoLibrary() {
         //判断设置是否支持图片库
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
@@ -34,9 +38,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             print("读取相册错误")
         }
     }
-    
+    //是否调用过照相机的标记，调用过照相机为 true，反之为 false
     var flag: Bool = false
     
+    //照相机调用函数
     func fromCamera() {
         //判断设置是否支持照相机
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -56,10 +61,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    //选择图片后的调用函数，自动调用
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [String : Any]) {
         //显示的图片，并且做处理
         底面 = info[UIImagePickerControllerOriginalImage] as? UIImage
-        imageView.frame = CGRect(x: 0, y: (self.view.frame.height / 2) - (底面!.size.height * self.view.frame.width / 底面!.size.width) / 2, width: self.view.frame.width, height: 底面!.size.height * self.view.frame.width / 底面!.size.width)
+        imageView.frame = CGRect(x: 0,
+                                 y: (self.view.frame.height / 2) - (底面!.size.height * self.view.frame.width / 底面!.size.width) / 2,
+                                 width: self.view.frame.width,
+                                 height: 底面!.size.height * self.view.frame.width / 底面!.size.width)
         imageView.image = 底面
         
         if flag {
@@ -84,8 +94,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         let select: UIButton = UIButton(type: .system)
-        select.frame = CGRect(x: 10, y: 10, width: 100, height: 50)
+        select.frame = CGRect(x: 10,
+                              y: 10,
+                              width: 100,
+                              height: 50)
         select.setTitle("选择图片", for: UIControlState.normal)
         select.addTarget(self, action: #selector(ViewController.selector), for:.touchUpInside)
         self.view.addSubview(select)

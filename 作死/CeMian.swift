@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 
+//获取侧面
 class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     let imageView = UIImageView()
@@ -18,15 +19,10 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     }
     
     func fromPhotoLibrary() {
-        //判断设置是否支持图片库
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-            //初始化图片控制器
             let picker = UIImagePickerController()
-            //设置代理
             picker.delegate = self
-            //指定图片控制器类型
             picker.sourceType = UIImagePickerControllerSourceType.photoLibrary
-            //弹出控制器，显示界面
             self.present(picker, animated: true, completion: {
                 () -> Void in
             })
@@ -38,16 +34,11 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     var flag: Bool = false
     
     func fromCamera() {
-        //判断设置是否支持照相机
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             flag = true
             let picker = UIImagePickerController()
             picker.delegate = self
             picker.sourceType = UIImagePickerControllerSourceType.camera
-            //            picker.showsCameraControls = false
-            //            let cameraTransform = CGAffineTransform(scaleX: 9, y: 16)
-            //            picker.cameraViewTransform = cameraTransform
-            //            picker.cameraOverlayView = self.view
             self.present(picker, animated: true, completion: {
                 () -> Void in
             })
@@ -56,14 +47,17 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        //显示的图片，并且做处理
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [String : Any]) {
+
         侧面 = info[UIImagePickerControllerOriginalImage] as? UIImage
-        imageView.frame = CGRect(x: 0, y: (self.view.frame.height / 2) - (侧面!.size.height * self.view.frame.width / 侧面!.size.width) / 2, width: self.view.frame.width, height: 侧面!.size.height * self.view.frame.width / 侧面!.size.width)
+        imageView.frame = CGRect(x: 0,
+                                 y: (self.view.frame.height / 2) - (侧面!.size.height * self.view.frame.width / 侧面!.size.width) / 2,
+                                 width: self.view.frame.width,
+                                 height: 侧面!.size.height * self.view.frame.width / 侧面!.size.width)
         imageView.image = 侧面
         
         if flag {
-            // 保存图片到系统相册
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.creationRequestForAsset(from: 侧面!)
             }, completionHandler: { (isSuccess: Bool, error: NSError?) in
@@ -76,7 +70,6 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             flag = false
         }
         
-        //图片控制器退出
         picker.dismiss(animated: true, completion: {
             () -> Void in
         })
@@ -84,26 +77,18 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         let select: UIButton = UIButton(type: .system)
-        select.frame = CGRect(x: 10, y: 10, width: 100, height: 50)
+        select.frame = CGRect(x: 10,
+                              y: 10,
+                              width: 100,
+                              height: 50)
         select.setTitle("选择图片", for: UIControlState.normal)
         select.addTarget(self, action: #selector(CeMian.selector), for:.touchUpInside)
         self.view.addSubview(select)
         
         self.view.addSubview(imageView)
         
-        // Do any additional setup after loading the view, typically from a nib.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

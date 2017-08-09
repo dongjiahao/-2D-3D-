@@ -8,14 +8,15 @@
 
 import UIKit
 
-var xMax: CGFloat?
-var yMax: CGFloat?
-//记录侧面的高宽比
-var rateHW: CGFloat?
-var widthArray: [CGFloat] = []
-
-//希望能从数据上分析出
+//从数据上分析出物体的形状特征
 class FXViewController: UIViewController {
+    
+    //跳转到下一个页面
+    func nextView() {
+        let myStoryBoard = self.storyboard
+        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
+        self.present(anotherView, animated: true, completion: nil)
+    }
     
     //候选的UIButton
     var candidate: MyButton?
@@ -24,8 +25,9 @@ class FXViewController: UIViewController {
     
     var num: Int = 0  //记录添加的点数
     
+    //点击为选中状态
     func awaitOrders(_ button: MyButton) {
-        if allow && !button.red! {
+        if allow && button.blue! {
             button.yellow = true
             candidate = button
             allow = false
@@ -48,7 +50,7 @@ class FXViewController: UIViewController {
     
     //添加顶点
     func addP() {
-        list.appendToHead(val: candidate!)
+        list!.appendToHead(val: candidate!)
         candidate?.red = true
         candidate = nil
         allow = true
@@ -58,38 +60,44 @@ class FXViewController: UIViewController {
     //取消添加上一个点
     func qXAddP() {
         if num > 0 {
-            list.head?.val.blue = true
-            list.head = list.head?.next
+            list!.head?.val.blue = true
+            list!.head = list!.head?.next
             num -= 1
         }
     }
     
+    //等待指示
+    //CM() 和 viewDidLoad() 都完成工作才进行下一步任务
     var waitZ1 = false
     var waitZ2 = false
     
+    //处理侧面的函数，该函数单开一个线程
     func CM() {
         //        第一步：创建Operation
         let cm = Operation.init()
         //        第二步：把要执行的代码放入operation中
         cm.completionBlock = {
-            
-            matrixCM = Matrix<Bool>(rows: Int(边缘检测后的侧面!.size.width / 2), columns: Int(边缘检测后的侧面!.size.height / 2), example: false)
+            //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
+            matrixCM = Matrix<Bool>(rows: Int(边缘检测后的侧面!.size.width / 2),
+                                    columns: Int(边缘检测后的侧面!.size.height / 2),
+                                    example: false)
             //取样间隔为2 先列后行
             for i in stride(from: 0, to: Int(边缘检测后的侧面!.size.width) - 1, by: 2) {
                 for j in stride(from: 0, to: Int(边缘检测后的侧面!.size.height) - 1, by: 2) {
                     //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
                     if 边缘检测后的侧面!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
                         //第二层门槛，起到medianBlur(中值滤波)的作用
-                        var flag: CGFloat = 0
+                        //mean 记录以一点为中心周围25个点的灰度平均值
+                        var mean: CGFloat = 0
                         for m in (i - 2)...(i + 2) {
                             for n in (j - 2)...(j + 2) {
-                                flag += 边缘检测后的侧面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
+                                mean += 边缘检测后的侧面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
                             }
                         }
                         
-                        flag /= 25
+                        mean /= 25
                         
-                        if flag >= 0.3 {
+                        if mean >= 0.3 {
                             //记录图片的信息到s的转置矩阵 前为行数后为列数
                             matrixCM![i / 2,j / 2] = true
                         }
@@ -98,11 +106,17 @@ class FXViewController: UIViewController {
                 }
             }
             
+            //缩小矩阵的大小，摘除多余的行和列
+            //行的最小值
             var rowMinCM: Int = 0
+            //行的最大值
             var rowMaxCM: Int = 0
+            //列的最小值
             var columnMinCM: Int = 0
+            //列的最大值
             var columnMaxCM: Int = 0
             
+            //寻找行的最小值的闭包
             let seekRowMinCM = {
                 for i in 0..<matrixCM!.rows {
                     for j in 0..<matrixCM!.columns {
@@ -114,6 +128,7 @@ class FXViewController: UIViewController {
                 }
             }
             
+            //寻找行的最大值的闭包
             let seekRowMaxCM = {
                 for i in (0..<matrixCM!.rows).reversed() {
                     for j in 0..<matrixCM!.columns {
@@ -125,6 +140,7 @@ class FXViewController: UIViewController {
                 }
             }
             
+            //寻找列的最小值的闭包
             let seekColumnMinCM = {
                 for i in 0..<matrixCM!.columns {
                     for j in 0..<matrixCM!.rows {
@@ -136,6 +152,7 @@ class FXViewController: UIViewController {
                 }
             }
             
+            //寻找列的最大值的闭包
             let seekColumnMaxCM = {
                 for i in (0..<matrixCM!.columns).reversed() {
                     for j in 0..<matrixCM!.rows {
@@ -147,9 +164,12 @@ class FXViewController: UIViewController {
                 }
             }
             
+            //等待指示
+            //basicOperationCMOne() 和 下面的代码都完成工作才进行下一步任务
             var waitCMOne: Bool = false
             var waitCMTwo: Bool = false
             
+            //开启一个新的线程
             func basicOperationCMOne() {
                 //        第一步：创建Operation
                 let op = Operation.init()
@@ -178,8 +198,11 @@ class FXViewController: UIViewController {
             waitCMOne = false
             waitCMTwo = false
             
+            //重建新的矩阵
             var newMatrixCM: Matrix<Bool>? = nil
-            newMatrixCM = Matrix<Bool>(rows: rowMaxCM - rowMinCM + 1, columns: columnMaxCM - columnMinCM + 1, example: false)
+            newMatrixCM = Matrix<Bool>(rows: rowMaxCM - rowMinCM + 1,
+                                       columns: columnMaxCM - columnMinCM + 1,
+                                       example: false)
             
             for i in 0..<newMatrixCM!.rows {
                 for j in 0..<newMatrixCM!.columns {
@@ -188,17 +211,19 @@ class FXViewController: UIViewController {
             }
             
             matrixCM = newMatrixCM
+            //高宽比 = 矩阵的行数比上矩阵的列数
             rateHW = CGFloat(matrixCM!.rows) / CGFloat(matrixCM!.columns)
             newMatrixCM = nil
+            边缘检测后的侧面 = nil
             
             //取宽度
-            for i in stride(from: 3, to: Int(matrixCM!.rows) - 1, by: 3) {
+            for i in stride(from: 2, to: Int(matrixCM!.rows) - 1, by: 2) {
                 
                 var l = 0
                 var r = 0
                 var lr: [Int] = []
                 
-                for m in (1...3).reversed() {
+                for m in (1...2).reversed() {
                     for j in 0..<matrixCM!.columns {
                         guard !matrixCM![i - m,j] else {
                             l = j
@@ -225,6 +250,8 @@ class FXViewController: UIViewController {
                 
             }
             
+            matrixCM = nil
+            
             //摘除突变的层
             var temporary: [CGFloat] = []
             for i in stride(from: 1, to: widthArray.count - 2, by: 1) {
@@ -235,6 +262,7 @@ class FXViewController: UIViewController {
                 
             }
             widthArray = temporary
+            //移除开头和结尾，因为值一般情况下是不可取的
             widthArray.removeLast()
             widthArray.removeFirst()
             temporary = []
@@ -246,42 +274,51 @@ class FXViewController: UIViewController {
         //        第四步：把Operation加入到线程中
         opQueue.addOperation(cm)
     }
-    
-    func nextView() {
-        let myStoryBoard = self.storyboard
-        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
-        self.present(anotherView, animated: true, completion: nil)
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let rem: UIButton = UIButton(type: .system)
-        rem.frame = CGRect(x: 150, y: 10, width: 100, height: 40)
+        rem.frame = CGRect(x: 150,
+                           y: 10,
+                           width: 100,
+                           height: 40)
         rem.setTitle("移除点", for: UIControlState.normal)
         rem.addTarget(self, action: #selector(FXViewController.remove), for:.touchUpInside)
         self.view.addSubview(rem)
         
         let rep: UIButton = UIButton(type: .system)
-        rep.frame = CGRect(x: 10, y: 10, width: 100, height: 40)
+        rep.frame = CGRect(x: 10,
+                           y: 10,
+                           width: 100,
+                           height: 40)
         rep.setTitle("取消选中", for: UIControlState.normal)
         rep.addTarget(self, action: #selector(FXViewController.repeal), for:.touchUpInside)
         self.view.addSubview(rep)
         
         let add: UIButton = UIButton(type: .system)
-        add.frame = CGRect(x: self.view.frame.width - 110, y: 10, width: 100, height: 40)
+        add.frame = CGRect(x: self.view.frame.width - 110,
+                           y: 10,
+                           width: 100,
+                           height: 40)
         add.setTitle("添加顶点", for: UIControlState.normal)
         add.addTarget(self, action: #selector(FXViewController.addP), for:.touchUpInside)
         self.view.addSubview(add)
         
         let qX: UIButton = UIButton(type: .system)
-        qX.frame = CGRect(x: 10, y: 50, width: 150, height: 40)
+        qX.frame = CGRect(x: 10,
+                          y: 50,
+                          width: 150,
+                          height: 40)
         qX.setTitle("取消添加上一个点", for: UIControlState.normal)
         qX.addTarget(self, action: #selector(FXViewController.qXAddP), for:.touchUpInside)
         self.view.addSubview(qX)
         
         let ne: UIButton = UIButton(type: .system)
-        ne.frame = CGRect(x: self.view.frame.width - 110, y: 50, width: 100, height: 40)
+        ne.frame = CGRect(x: self.view.frame.width - 110,
+                          y: 50,
+                          width: 100,
+                          height: 40)
         ne.setTitle("下一步", for: UIControlState.normal)
         ne.addTarget(self, action: #selector(FXViewController.nextView), for:.touchUpInside)
         self.view.addSubview(ne)
@@ -290,6 +327,7 @@ class FXViewController: UIViewController {
         CM()
         
         //底面的数据分析
+        //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
         matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.width / 2), columns: Int(边缘检测后的底面!.size.height / 2), example: false)
         start = CACurrentMediaTime()
         //取样间隔为2 先列后行
@@ -298,16 +336,17 @@ class FXViewController: UIViewController {
                 //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
                 if 边缘检测后的底面!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
                     //第二层门槛，起到medianBlur(中值滤波)的作用
-                    var flag: CGFloat = 0
+                    //mean 记录以一点为中心周围25个点的灰度平均值
+                    var mean: CGFloat = 0
                     for m in (i - 2)...(i + 2) {
                         for n in (j - 2)...(j + 2) {
-                            flag += 边缘检测后的底面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
+                            mean += 边缘检测后的底面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
                         }
                     }
                     
-                    flag /= 25
+                    mean /= 25
                     
-                    if flag >= 0.3 {
+                    if mean >= 0.3 {
                         //记录图片的信息到转置矩阵 前为行数后为列数
                         matrixDM![i / 2,j / 2] = true
                     }
@@ -316,6 +355,7 @@ class FXViewController: UIViewController {
             }
         }
         
+        //缩小底面的矩阵，同侧面的注释
         var rowMinDM: Int = 0
         var rowMaxDM: Int = 0
         var columnMinDM: Int = 0
@@ -365,10 +405,14 @@ class FXViewController: UIViewController {
             }
         }
         
+        //等待指示
+        //basicOperationCMOne() 和 下面的代码都完成工作才进行下一步任务
+        //之后
+        //basicOperationDMOne() 和 下面的代码都完成工作才进行下一步任务
         var waitDMOne: Bool = false
         var waitDMTwo: Bool = false
         
-        func basicOperationOne() {
+        func basicOperationDMOne() {
             //        第一步：创建Operation
             let op = Operation.init()
             //        第二步：把要执行的代码放入operation中
@@ -385,7 +429,7 @@ class FXViewController: UIViewController {
             opQueue.addOperation(op)
         }
         
-        basicOperationOne()
+        basicOperationDMOne()
         
         seekRowMinDM()
         seekColumnMinDM()
@@ -493,7 +537,7 @@ class FXViewController: UIViewController {
         print(1)
         print(CACurrentMediaTime() - start)
         
-        func basicOperationTwo() {
+        func basicOperationDMTwo() {
             //        第一步：创建Operation
             let op = Operation.init()
             //        第二步：把要执行的代码放入operation中
@@ -531,9 +575,8 @@ class FXViewController: UIViewController {
             opQueue.addOperation(op)
         }
         
-        start = CACurrentMediaTime()
         
-        basicOperationTwo()
+        basicOperationDMTwo()
         
         for j in 0..<matrixDM!.columns {
             //上纵向筛选有点的列,并记录坐标
@@ -565,20 +608,13 @@ class FXViewController: UIViewController {
         }
         waitDMOne = false
         waitDMTwo = false
-        print(2)
-        print(CACurrentMediaTime() - start)
         
-        start = CACurrentMediaTime()
         //CGPoint数组排序
         arraySZ!.sort() { $1.y > $0.y }
         arrayXZ!.sort() { $1.y > $0.y }
         arrayZH!.sort() { $1.x > $0.x }
         arrayYH!.sort() { $1.x > $0.x }
         
-        print(3)
-        print(CACurrentMediaTime() - start)
-        
-        start = CACurrentMediaTime()
         //获得斜率
         slopeSZ! = getSlopeZ(array: arraySZ!)
         slopeXZ! = getSlopeZ(array: arrayXZ!)
@@ -603,16 +639,11 @@ class FXViewController: UIViewController {
             }
             return newArray
         }
-        print(4)
-        print(CACurrentMediaTime() - start)
-        
-        start = CACurrentMediaTime()
+
         slopeSZ = mean(slopeSZ!)
         slopeXZ = mean(slopeXZ!)
         slopeZH = mean(slopeZH!)
         slopeYH = mean(slopeYH!)
-        print(5)
-        print(CACurrentMediaTime() - start)
         
         //判断可疑的顶点规则：
         //1、首尾为顶点
@@ -658,13 +689,10 @@ class FXViewController: UIViewController {
             }
         }
         
-        start = CACurrentMediaTime()
         tip(arraySZ!, slopeSZ!)
         tip(arrayXZ!, slopeXZ!)
         tip(arrayZH!, slopeZH!)
         tip(arrayYH!, slopeYH!)
-        print(6)
-        print(CACurrentMediaTime() - start)
         
         //不在用了，释放内存
         arraySZ = nil
@@ -691,7 +719,6 @@ class FXViewController: UIViewController {
             }
         }
         
-        start = CACurrentMediaTime()
         //简化Point数组，把位置相近的点合为一个点
         for i in 0..<point!.count {
             temporary = []
@@ -713,8 +740,6 @@ class FXViewController: UIViewController {
                 simplePoint.append(CGPoint(x: meanY, y: meanX))
             }
         }
-        print(7)
-        print(CACurrentMediaTime() - start)
         
         temporary = nil
         point = nil
@@ -730,7 +755,6 @@ class FXViewController: UIViewController {
         
         yMax = simplePoint[0].y
         
-        start = CACurrentMediaTime()
         for i in 0..<simplePoint.count {
             if xMin! > simplePoint[i].x {
                 xMin = simplePoint[i].x
@@ -745,8 +769,6 @@ class FXViewController: UIViewController {
                 yMax = simplePoint[i].y
             }
         }
-        print(8)
-        print(CACurrentMediaTime() - start)
         
         xMax! -= xMin!
         yMax! -= yMin!
@@ -760,10 +782,13 @@ class FXViewController: UIViewController {
             o = (self.view.frame.width - 5 - 13 - 5) / xMax!
         }
         
-        start = CACurrentMediaTime()
         for i in 0..<simplePoint.count {
-            simplePoint[i] = CGPoint(x: simplePoint[i].x - xMin!, y: simplePoint[i].y - yMin!)
-            let button = MyButton(frame: CGRect(x: (simplePoint[i].x * o!) + 5, y: (simplePoint[i].y * o!) + 110, width: 13, height: 13))
+            simplePoint[i] = CGPoint(x: simplePoint[i].x - xMin!,
+                                     y: simplePoint[i].y - yMin!)
+            let button = MyButton(frame: CGRect(x: (simplePoint[i].x * o!) + 5,
+                                                y: (simplePoint[i].y * o!) + 110,
+                                                width: 13,
+                                                height: 13))
             button.p = simplePoint[i]
             button.blue = true
             button.adjustsImageWhenHighlighted=false //使触摸模式下按钮也不会变暗（半透明）
@@ -771,12 +796,11 @@ class FXViewController: UIViewController {
             button.addTarget(self, action: #selector(FXViewController.awaitOrders(_ :)), for:.touchUpInside)
             self.view.addSubview(button)
         }
-        print(9)
-        print(CACurrentMediaTime() - start)
         
         xMin = nil
         yMin = nil
         o = nil
+        simplePoint = []
         matrixDM = nil
         
         waitZ2 = true
