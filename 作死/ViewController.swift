@@ -19,6 +19,31 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func selector() {
         present(selectorController, animated: true, completion: nil)
     }
+    //下一步
+    func theNextStep() {
+        //错误处理
+        do {
+            //抛出错误
+            try isThereAnImage(底面)
+            let myStoryBoard = self.storyboard
+            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SobelEdgeDetection"))! as UIViewController
+            self.present(anotherView, animated: true, completion: nil)
+        } catch EnrollError.NoImageFound {
+            //解决错误
+            let a = UIAlertController(title: "错误",
+                                      message: "请选择图片后再进入下一步",
+                                      preferredStyle: UIAlertControllerStyle.alert)
+            a.addAction(UIAlertAction(title: "选择图片",
+                                      style: UIAlertActionStyle.default,
+                                      handler: { (_) -> Void in self.selector()}))
+            a.addAction(UIAlertAction(title: "关闭",
+                                      style: UIAlertActionStyle.default,
+                                      handler: nil))
+            self.present(a, animated: true, completion: nil)
+        } catch {
+            print("未知错误")
+        }
+    }
     
     //相册调用函数
     func fromPhotoLibrary() {
@@ -96,13 +121,22 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
         
         let select: UIButton = UIButton(type: .system)
-        select.frame = CGRect(x: 10,
-                              y: 10,
+        select.frame = CGRect(x: 16,
+                              y: 20,
                               width: 100,
-                              height: 50)
+                              height: 30)
         select.setTitle("选择图片", for: UIControlState.normal)
         select.addTarget(self, action: #selector(ViewController.selector), for:.touchUpInside)
         self.view.addSubview(select)
+        
+        let next: UIButton = UIButton(type: .system)
+        next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
+                            y: 20,
+                            width: 100,
+                            height: 30)
+        next.setTitle("下一步", for: UIControlState.normal)
+        next.addTarget(self, action: #selector(ViewController.theNextStep), for:.touchUpInside)
+        self.view.addSubview(next)
         
         self.view.addSubview(imageView)
         

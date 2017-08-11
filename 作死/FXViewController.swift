@@ -11,19 +11,32 @@ import UIKit
 //从数据上分析出物体的形状特征
 class FXViewController: UIViewController {
     
+    var num: Int = 0  //记录添加的点数
+    
     //跳转到下一个页面
     func nextView() {
-        let myStoryBoard = self.storyboard
-        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
-        self.present(anotherView, animated: true, completion: nil)
+        do {
+            try areThereEnoughPoints(num)
+            let myStoryBoard = self.storyboard
+            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
+            self.present(anotherView, animated: true, completion: nil)
+        } catch EnrollError.InsufficientPoints {
+            let a = UIAlertController(title: "错误",
+                                      message: "至少添加3个顶点才能围成一个面",
+                                      preferredStyle: UIAlertControllerStyle.alert)
+            a.addAction(UIAlertAction(title: "关闭",
+                                      style: UIAlertActionStyle.default,
+                                      handler: nil))
+            self.present(a, animated: true, completion: nil)
+        } catch {
+            print("未知错误")
+        }
     }
     
     //候选的UIButton
     var candidate: MyButton?
     //是否允许选中点的标志
     var allow: Bool = true
-    
-    var num: Int = 0  //记录添加的点数
     
     //点击为选中状态
     func awaitOrders(_ button: MyButton) {
@@ -50,11 +63,24 @@ class FXViewController: UIViewController {
     
     //添加顶点
     func addP() {
-        list!.appendToHead(val: candidate!)
-        candidate?.red = true
-        candidate = nil
-        allow = true
-        num += 1
+        do {
+            try isThereAnPoint(candidate)
+            list!.appendToHead(val: candidate!)
+            candidate?.red = true
+            candidate = nil
+            allow = true
+            num += 1
+        } catch EnrollError.NoPointFound {
+            let a = UIAlertController(title: "错误",
+                                      message: "请选择要添加为顶点的点",
+                                      preferredStyle: UIAlertControllerStyle.alert)
+            a.addAction(UIAlertAction(title: "关闭",
+                                      style: UIAlertActionStyle.default,
+                                      handler: nil))
+            self.present(a, animated: true, completion: nil)
+        } catch {
+            print("未知错误")
+        }
     }
     
     //取消添加上一个点
@@ -99,7 +125,7 @@ class FXViewController: UIViewController {
                         
                         if mean >= 0.3 {
                             //记录图片的信息到s的转置矩阵 前为行数后为列数
-                            matrixCM![i / 2,j / 2] = true
+                            matrixCM![i / 2, (Int(边缘检测后的侧面!.size.height) - 1 - j) / 2] = true
                         }
                     }
                     
@@ -217,6 +243,7 @@ class FXViewController: UIViewController {
             边缘检测后的侧面 = nil
             
             //取宽度
+            //决定分多少层
             for i in stride(from: 2, to: Int(matrixCM!.rows) - 1, by: 2) {
                 
                 var l = 0
@@ -279,46 +306,46 @@ class FXViewController: UIViewController {
         super.viewDidLoad()
         
         let rem: UIButton = UIButton(type: .system)
-        rem.frame = CGRect(x: 150,
-                           y: 10,
+        rem.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
+                           y: 20,
                            width: 100,
-                           height: 40)
+                           height: 30)
         rem.setTitle("移除点", for: UIControlState.normal)
         rem.addTarget(self, action: #selector(FXViewController.remove), for:.touchUpInside)
         self.view.addSubview(rem)
         
         let rep: UIButton = UIButton(type: .system)
-        rep.frame = CGRect(x: 10,
-                           y: 10,
+        rep.frame = CGRect(x: 16,
+                           y: 20,
                            width: 100,
-                           height: 40)
+                           height: 30)
         rep.setTitle("取消选中", for: UIControlState.normal)
         rep.addTarget(self, action: #selector(FXViewController.repeal), for:.touchUpInside)
         self.view.addSubview(rep)
         
         let add: UIButton = UIButton(type: .system)
         add.frame = CGRect(x: self.view.frame.width - 110,
-                           y: 10,
+                           y: 20,
                            width: 100,
-                           height: 40)
+                           height: 30)
         add.setTitle("添加顶点", for: UIControlState.normal)
         add.addTarget(self, action: #selector(FXViewController.addP), for:.touchUpInside)
         self.view.addSubview(add)
         
         let qX: UIButton = UIButton(type: .system)
-        qX.frame = CGRect(x: 10,
-                          y: 50,
+        qX.frame = CGRect(x: self.view.frame.width - 160,
+                          y: 60,
                           width: 150,
-                          height: 40)
+                          height: 30)
         qX.setTitle("取消添加上一个点", for: UIControlState.normal)
         qX.addTarget(self, action: #selector(FXViewController.qXAddP), for:.touchUpInside)
         self.view.addSubview(qX)
         
         let ne: UIButton = UIButton(type: .system)
-        ne.frame = CGRect(x: self.view.frame.width - 110,
-                          y: 50,
+        ne.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
+                          y: 60,
                           width: 100,
-                          height: 40)
+                          height: 30)
         ne.setTitle("下一步", for: UIControlState.normal)
         ne.addTarget(self, action: #selector(FXViewController.nextView), for:.touchUpInside)
         self.view.addSubview(ne)
@@ -348,7 +375,7 @@ class FXViewController: UIViewController {
                     
                     if mean >= 0.3 {
                         //记录图片的信息到转置矩阵 前为行数后为列数
-                        matrixDM![i / 2,j / 2] = true
+                        matrixDM![i / 2, (Int(边缘检测后的底面!.size.height) - 1 - j) / 2] = true
                     }
                 }
                 
@@ -458,7 +485,7 @@ class FXViewController: UIViewController {
         边缘检测后的底面 = nil
         
         //可疑的顶点
-        var point: [MyCGPoint]? = []
+        var myCGPointArray: [MyCGPoint]? = []
         
         //自上而下纵向扫描得出的点数组
         var arraySZ: [CGPoint]? = []
@@ -651,8 +678,8 @@ class FXViewController: UIViewController {
         //
         //检查是否存在点
         func checkP(_ p: CGPoint) -> Bool {
-            for i in 0..<point!.count {
-                if CGPoint(x: point![i].x, y: point![i].y) == CGPoint(x: p.x, y: p.y) {
+            for i in 0..<myCGPointArray!.count {
+                if CGPoint(x: myCGPointArray![i].x, y: myCGPointArray![i].y) == CGPoint(x: p.x, y: p.y) {
                     return true
                 }
             }
@@ -661,7 +688,7 @@ class FXViewController: UIViewController {
         //添加点         //注：此函数在本文件里为通用函数
         func addPoint(_ p: CGPoint) {
             if !checkP(p) {
-                point!.append(MyCGPoint(x: p.x, y: p.y, ed: false))
+                myCGPointArray!.append(MyCGPoint(x: p.x, y: p.y, ed: false))
             }
         }
         //储存顶点
@@ -708,22 +735,22 @@ class FXViewController: UIViewController {
         var temporary: [CGPoint]? = []
         
         func nearby(_ p: CGPoint) {
-            for j in 0..<point!.count {
-                if !point![j].ed {
-                    let a = pow(pow(abs(p.x - point![j].x), 2) + pow(abs(p.y - point![j].y), 2), 0.5)
+            for j in 0..<myCGPointArray!.count {
+                if !myCGPointArray![j].ed {
+                    let a = pow(pow(abs(p.x - myCGPointArray![j].x), 2) + pow(abs(p.y - myCGPointArray![j].y), 2), 0.5)
                     if a <= 5 {
-                        temporary!.append(CGPoint(x: point![j].x, y: point![j].y))
-                        point![j].ed = true
+                        temporary!.append(CGPoint(x: myCGPointArray![j].x, y: myCGPointArray![j].y))
+                        myCGPointArray![j].ed = true
                     }
                 }
             }
         }
         
         //简化Point数组，把位置相近的点合为一个点
-        for i in 0..<point!.count {
+        for i in 0..<myCGPointArray!.count {
             temporary = []
-            if !point![i].ed {
-                nearby(CGPoint(x: point![i].x, y: point![i].y))
+            if !myCGPointArray![i].ed {
+                nearby(CGPoint(x: myCGPointArray![i].x, y: myCGPointArray![i].y))
                 for _ in 0...1 {
                     for j in 0..<temporary!.count {
                         nearby(temporary![j])
@@ -742,10 +769,17 @@ class FXViewController: UIViewController {
         }
         
         temporary = nil
-        point = nil
+        myCGPointArray = nil
         
         //用于以后将点展示在屏幕上
         //平移因子
+        //底面x方向所占最大宽度
+        var xMax: CGFloat?
+        //例如：-------
+        //          -----
+        //xMax = 10
+        //底面y方向所占最大宽度
+        var yMax: CGFloat?
         var xMin: CGFloat?
         xMin = simplePoint[0].x
         var yMin: CGFloat?

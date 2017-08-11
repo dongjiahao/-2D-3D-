@@ -15,17 +15,12 @@ class SobelEdgeDetection: UIViewController {
     
     var imagePicture: GPUImagePicture? = GPUImagePicture()
     
-    //返回
-    func jump() {
-        self.presentingViewController!.dismiss(animated: true, completion: nil)
-    }
-    
     func showImage() {
         let myStoryBoard = self.storyboard
-        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "ShowCeMianViewController"))! as UIViewController
+        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "CeMian"))! as UIViewController
         self.present(anotherView, animated: true, completion: nil)
     }
-    
+        
     func sharePhoto() {
         //保存图片
         PHPhotoLibrary.shared().performChanges({
@@ -57,8 +52,8 @@ class SobelEdgeDetection: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var imageView: GPUImageView? = GPUImageView(frame: self.view.frame)
-        self.view = imageView
+//        var imageView: GPUImageView? = GPUImageView(frame: self.view.frame)
+//        self.view = imageView
         imagePicture = GPUImagePicture(image: 底面!)
         底面 = nil
         
@@ -69,9 +64,9 @@ class SobelEdgeDetection: UIViewController {
         var edgeDetectionFilter: GPUImageSobelEdgeDetectionFilter? = GPUImageSobelEdgeDetectionFilter()
         //边界检测强度，值越大，边界线约清晰，但会少量增加噪声数量和强度
         edgeDetectionFilter!.edgeStrength = 4
-
+        
         imagePicture!.addTarget(gaussianBlurFilter)
-        gaussianBlurFilter!.addTarget(imageView!)
+        gaussianBlurFilter!.addTarget(self.view as! GPUImageInput!)
         imagePicture!.processImage()
         gaussianBlurFilter!.useNextFrameForImageCapture()
         边缘检测后的底面 = gaussianBlurFilter!.imageFromCurrentFramebuffer()
@@ -81,27 +76,17 @@ class SobelEdgeDetection: UIViewController {
 
         imagePicture = GPUImagePicture(image: 边缘检测后的底面)
         imagePicture!.addTarget(edgeDetectionFilter)
-        edgeDetectionFilter!.addTarget(imageView!)
+        edgeDetectionFilter!.addTarget(self.view as! GPUImageInput!)
         imagePicture!.processImage()
         //获取图片
         edgeDetectionFilter!.useNextFrameForImageCapture()
         边缘检测后的底面 = edgeDetectionFilter!.imageFromCurrentFramebuffer()
         
-        imageView = nil
         edgeDetectionFilter = nil
         imagePicture = nil
-
-        let button: UIButton = UIButton(type: .system)
-        button.frame = CGRect(x: 10,
-                              y: 10,
-                              width: 100,
-                              height: 50)
-        button.setTitle("返回", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(SobelEdgeDetection.jump), for:.touchUpInside)
-        self.view.addSubview(button)
         
         let next: UIButton = UIButton(type: .system)
-        next.frame = CGRect(x: 150,
+        next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                             y: 10,
                             width: 100,
                             height: 50)
@@ -110,10 +95,10 @@ class SobelEdgeDetection: UIViewController {
         self.view.addSubview(next)
         
         let share: UIButton = UIButton(type: .system)
-        share.frame = CGRect(x: self.view.frame.width - 110,
-                             y: 10,
+        share.frame = CGRect(x: self.view.frame.width - 116,
+                             y: 20,
                              width: 100,
-                             height: 50)
+                             height: 30)
         share.setTitle("保存图片", for: UIControlState.normal)
         share.addTarget(self, action: #selector(SobelEdgeDetection.sharePhoto), for:.touchUpInside)
         self.view.addSubview(share)

@@ -10,11 +10,44 @@ import UIKit
 import QuartzCore
 import SceneKit
 
+//展示3D模型
 class SceneView: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         let scene = SCNScene(named: "a.scnassets/a.scn")!
+        
+        //底面x方向所占最大宽度
+        var xMax: CGFloat? = 0
+        //例如：-------
+        //          -----
+        //xMax = 10
+        //底面y方向所占最大宽度
+        var yMax: CGFloat? = 0
+        var xMin: CGFloat? = list!.head!.val.p!.x
+        var yMin: CGFloat? = list!.head!.val.p!.y
+        var targetOne = list!.head
+        
+        repeat {
+            if xMin! > targetOne!.val.p!.x {
+                xMin = targetOne!.val.p!.x
+            }
+            if yMin! > targetOne!.val.p!.y {
+                yMin = targetOne!.val.p!.y
+            }
+            if xMax! < targetOne!.val.p!.x {
+                xMax = targetOne!.val.p!.x
+            }
+            if yMax! < targetOne!.val.p!.y {
+                yMax = targetOne!.val.p!.y
+            }
+            targetOne = targetOne!.next
+        } while targetOne!.next != nil
+        
+        xMax! -= xMin!
+        yMax! -= yMin!
+        xMin = nil
+        yMin = nil
         
         //中心点
         let centralPoint: CGPoint = CGPoint(x: xMax! / 2,
@@ -34,20 +67,20 @@ class SceneView: UIViewController {
             //~~~~~~~~~~~~~~~~~~~~
             //创建路径
             let linePath = UIBezierPath()
-            var target = list!.head
-            var px = ((target!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
+            var targetTwo = list!.head
+            var px = ((targetTwo!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
 //            var py = (centralPoint.y - (centralPoint.y - 0.5 * target!.val.p!.y * (widthArray[i] * rate))) / 1000
-            var py = ((target!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
+            var py = ((targetTwo!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
             //起点
             let start = CGPoint(x: px, y: py)
             linePath.move(to: start)
             //添加其他点
             repeat {
-                target = target!.next
-                px = ((target!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
-                py = ((target!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
+                targetTwo = targetTwo!.next
+                px = ((targetTwo!.val.p!.x - centralPoint.x) * (widthArray[widthArray.count - i] * rate) + centralPoint.x) / 1000
+                py = ((targetTwo!.val.p!.y - centralPoint.y) * (widthArray[widthArray.count - i] * rate) + centralPoint.y) / 1000
                 linePath.addLine(to: CGPoint(x: px, y: py))
-            } while target!.next != nil
+            } while targetTwo!.next != nil
             
             //设置底面和高
             let dh = CGFloat((xMax! * rateHW! / CGFloat(widthArray.count)) / 1000)

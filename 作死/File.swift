@@ -9,11 +9,13 @@
 import Foundation
 import Photos
 
+//全局变量，类、结构体的定义及声明，以及类的扩展
+
 //就是想体验一把中文变量，没别的想法。。。
-var 底面: UIImage? = UIImage()
-var 边缘检测后的底面: UIImage? = UIImage()
-var 侧面: UIImage? = UIImage()
-var 边缘检测后的侧面: UIImage? = UIImage()
+var 底面: UIImage?
+var 边缘检测后的底面: UIImage?
+var 侧面: UIImage?
+var 边缘检测后的侧面: UIImage?
 //二维矩阵储存：像素化的图片再经筛选后的点
 //底面
 var matrixDM: Matrix<Bool>? = nil
@@ -23,13 +25,6 @@ var matrixCM: Matrix<Bool>? = nil
 var list: List? = List()
 //时间测试
 var start: CFAbsoluteTime = 0
-//底面x方向所占最大宽度
-var xMax: CGFloat?
-//例如：-------
-//          -----
-//xMax = 10
-//底面y方向所占最大宽度
-var yMax: CGFloat?
 //记录侧面的高宽比
 var rateHW: CGFloat?
 //记录侧面所取宽度的数组
@@ -212,5 +207,30 @@ class List {
             temp.next = head
             head = temp
         }
+    }
+}
+
+//错误枚举
+enum EnrollError: Error {
+    case NoImageFound
+    case NoPointFound
+    case InsufficientPoints
+}
+//抛出错误函数：用于检查是否选择了图片
+func isThereAnImage(_ image: UIImage?) throws {
+    guard image != nil else {
+        throw EnrollError.NoImageFound
+    }
+}
+//抛出错误函数：用于检查是否选中点
+func isThereAnPoint(_ point: MyButton?) throws {
+    guard point != nil else {
+        throw EnrollError.NoPointFound
+    }
+}
+//抛出错误函数：用于检查是否添加了足够的顶点，至少3个点围成一个面
+func areThereEnoughPoints(_ num: Int) throws {
+    guard num >= 3 else {
+        throw EnrollError.InsufficientPoints
     }
 }
