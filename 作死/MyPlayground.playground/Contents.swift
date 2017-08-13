@@ -8,38 +8,82 @@ import UIKit
 //说明二维矩阵的性能远好于二维数组(不用Array(repeating:, count:))
 //但是略差于二维数组(用Array(repeating:, count:))(用时 0.79)
 
-//struct Matrix<Element> {
-//    //任意元素类型二维矩阵
-//    let rows: Int, columns: Int
-//    var grid: [Element]
-//    var example: Element
-//    init(rows: Int,
-//         columns: Int,
-//         example: Element) {
-//        self.rows = rows
-//        self.columns = columns
-//        self.example = example
-//        grid = Array<Element>(repeating: example,
-//                              count: rows * columns)
-//    }
-//    func indexIsValidForRow(_ row: Int,
-//                            _ column: Int) -> Bool {
-//        return row >= 0 && row < rows && column >= 0 && column < columns
-//    }
-//    subscript(row: Int,
-//              column: Int) -> Element {
-//        get {
-//            assert(indexIsValidForRow(row, column), "Index out of range")
-//            return grid[(row * columns) + column]
+//但是！！！在iPhone6真机上运行正好相反！！！
+//二维矩阵的性能好于二维数组(用Array(repeating:, count:))！！！！
+//然而并不知道原因 ㄟ( ▔, ▔ )ㄏ
+
+//#if os(iOS)
+//    struct Matrix<Element> {
+//        //任意元素类型二维矩阵
+//        let rows: Int, columns: Int
+//        var grid: [Element]
+//        var example: Element
+//        init(rows: Int,
+//             columns: Int,
+//             example: Element) {
+//            self.rows = rows
+//            self.columns = columns
+//            self.example = example
+//            grid = Array<Element>(repeating: example,
+//                                  count: rows * columns)
 //        }
-//        set {
-//            assert(indexIsValidForRow(row, column), "Index out of range")
-//            grid[(row * columns) + column] = newValue
+//        func indexIsValidForRow(_ row: Int,
+//                                _ column: Int) -> Bool {
+//            return row >= 0 && row < rows && column >= 0 && column < columns
+//        }
+//        subscript(row: Int,
+//                  column: Int) -> Element {
+//            get {
+//                assert(indexIsValidForRow(row, column), "Index out of range")
+//                return grid[(row * columns) + column]
+//            }
+//            set {
+//                assert(indexIsValidForRow(row, column), "Index out of range")
+//                grid[(row * columns) + column] = newValue
+//            }
 //        }
 //    }
-//}
-////
-//var start: CFAbsoluteTime = 0
+//    //
+//    var start: CFAbsoluteTime = 0
+//    start = CACurrentMediaTime()
+//    //————————————————————————————————
+//    //var a:[[Bool]] = []
+//    //for i in 0..<100 {
+//    //    var a1: [Bool] = []
+//    //    for j in 0..<100 {
+//    //        a1.append(false)
+//    //    }
+//    //    a.append(a1)
+//    //}
+//    //16.26
+//    //————————————————————————————————
+//    var a1 = Array(repeating: false, count: 100)
+//    var a = Array(repeating: a1, count: 100)
+//    //0.79
+//    //————————————————————————————————
+//    for i in 0..<a.count {
+//        for j in 0..<a[i].count {
+//            a[i][j] = true
+//        }
+//    }
+//    //a
+//    print(CACurrentMediaTime() - start)
+//    //
+//    //
+//    start = CACurrentMediaTime()
+//    var b = Matrix<Bool>(rows: 100, columns: 100, example: false)
+//    
+//    for i in 0..<b.rows {
+//        for j in 0..<b.columns {
+//            b[i,j] = true
+//        }
+//    }
+//    //b
+//    //1.17
+//    print(CACurrentMediaTime() - start)
+//#endif
+
+//start = 0
 //start = CACurrentMediaTime()
 ////————————————————————————————————
 ////var a:[[Bool]] = []
@@ -52,7 +96,7 @@ import UIKit
 ////}
 ////16.26
 ////————————————————————————————————
-//var a1 = Array(repeating: false, count: 100)
+//let a1 = Array(repeating: false, count: 100)
 //var a = Array(repeating: a1, count: 100)
 ////0.79
 ////————————————————————————————————
@@ -61,10 +105,10 @@ import UIKit
 //        a[i][j] = true
 //    }
 //}
-//a
+////a
 //print(CACurrentMediaTime() - start)
-//
-//
+////
+////
 //start = CACurrentMediaTime()
 //var b = Matrix<Bool>(rows: 100, columns: 100, example: false)
 //
@@ -73,10 +117,11 @@ import UIKit
 //        b[i,j] = true
 //    }
 //}
-//b
+////b
 ////1.17
 //print(CACurrentMediaTime() - start)
-
+////0.0152259166352451
+////0.00833716674242169
 
 
 

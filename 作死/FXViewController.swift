@@ -104,9 +104,16 @@ class FXViewController: UIViewController {
         //        第二步：把要执行的代码放入operation中
         cm.completionBlock = {
             //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
-            matrixCM = Matrix<Bool>(rows: Int(边缘检测后的侧面!.size.width / 2),
-                                    columns: Int(边缘检测后的侧面!.size.height / 2),
-                                    example: false)
+//            matrixCM = Matrix<Bool>(rows: Int(边缘检测后的侧面!.size.width / 2),
+//                                    columns: Int(边缘检测后的侧面!.size.height / 2),
+//                                    example: false)
+            
+            single = Array(repeating: false,
+                           count: Int(边缘检测后的侧面!.size.height / 2))
+            doubleDimensionalArrayCM = Array(repeating: single,
+                                             count: Int(边缘检测后的侧面!.size.width / 2))
+            single = []
+            
             //取样间隔为2 先列后行
             for i in stride(from: 0, to: Int(边缘检测后的侧面!.size.width) - 1, by: 2) {
                 for j in stride(from: 0, to: Int(边缘检测后的侧面!.size.height) - 1, by: 2) {
@@ -125,7 +132,10 @@ class FXViewController: UIViewController {
                         
                         if mean >= 0.3 {
                             //记录图片的信息到s的转置矩阵 前为行数后为列数
-                            matrixCM![i / 2, (Int(边缘检测后的侧面!.size.height) - 1 - j) / 2] = true
+//                            matrixCM![i / 2, (Int(边缘检测后的侧面!.size.height) - 1 - j) / 2] = true
+//                            print(i / 2)
+//                            print((Int(边缘检测后的底面!.size.height) - 1 - j) / 2)
+                            doubleDimensionalArrayCM[i / 2][(Int(边缘检测后的侧面!.size.height) - 1 - j) / 2] = true
                         }
                     }
                     
@@ -144,9 +154,17 @@ class FXViewController: UIViewController {
             
             //寻找行的最小值的闭包
             let seekRowMinCM = {
-                for i in 0..<matrixCM!.rows {
-                    for j in 0..<matrixCM!.columns {
-                        if matrixCM![i,j] {
+//                for i in 0..<matrixCM!.rows {
+//                    for j in 0..<matrixCM!.columns {
+//                        if matrixCM![i,j] {
+//                            rowMinCM = i
+//                            return
+//                        }
+//                    }
+//                }
+                for i in 0..<doubleDimensionalArrayCM.count {
+                    for j in 0..<doubleDimensionalArrayCM[0].count {
+                        if doubleDimensionalArrayCM[i][j] {
                             rowMinCM = i
                             return
                         }
@@ -156,9 +174,17 @@ class FXViewController: UIViewController {
             
             //寻找行的最大值的闭包
             let seekRowMaxCM = {
-                for i in (0..<matrixCM!.rows).reversed() {
-                    for j in 0..<matrixCM!.columns {
-                        if matrixCM![i,j] {
+//                for i in (0..<matrixCM!.rows).reversed() {
+//                    for j in 0..<matrixCM!.columns {
+//                        if matrixCM![i,j] {
+//                            rowMaxCM = i
+//                            return
+//                        }
+//                    }
+//                }
+                for i in (0..<doubleDimensionalArrayCM.count).reversed() {
+                    for j in 0..<doubleDimensionalArrayCM[0].count {
+                        if doubleDimensionalArrayCM[i][j] {
                             rowMaxCM = i
                             return
                         }
@@ -168,9 +194,17 @@ class FXViewController: UIViewController {
             
             //寻找列的最小值的闭包
             let seekColumnMinCM = {
-                for i in 0..<matrixCM!.columns {
-                    for j in 0..<matrixCM!.rows {
-                        if matrixCM![j,i] {
+//                for i in 0..<matrixCM!.columns {
+//                    for j in 0..<matrixCM!.rows {
+//                        if matrixCM![j,i] {
+//                            columnMinCM = i
+//                            return
+//                        }
+//                    }
+//                }
+                for i in 0..<doubleDimensionalArrayCM[0].count {
+                    for j in 0..<doubleDimensionalArrayCM.count {
+                        if doubleDimensionalArrayCM[j][i] {
                             columnMinCM = i
                             return
                         }
@@ -180,9 +214,17 @@ class FXViewController: UIViewController {
             
             //寻找列的最大值的闭包
             let seekColumnMaxCM = {
-                for i in (0..<matrixCM!.columns).reversed() {
-                    for j in 0..<matrixCM!.rows {
-                        if matrixCM![j,i] {
+//                for i in (0..<matrixCM!.columns).reversed() {
+//                    for j in 0..<matrixCM!.rows {
+//                        if matrixCM![j,i] {
+//                            columnMaxCM = i
+//                            return
+//                        }
+//                    }
+//                }
+                for i in (0..<doubleDimensionalArrayCM[0].count).reversed() {
+                    for j in 0..<doubleDimensionalArrayCM.count {
+                        if doubleDimensionalArrayCM[j][i] {
                             columnMaxCM = i
                             return
                         }
@@ -225,41 +267,89 @@ class FXViewController: UIViewController {
             waitCMTwo = false
             
             //重建新的矩阵
-            var newMatrixCM: Matrix<Bool>? = nil
-            newMatrixCM = Matrix<Bool>(rows: rowMaxCM - rowMinCM + 1,
-                                       columns: columnMaxCM - columnMinCM + 1,
-                                       example: false)
+//            var newMatrixCM: Matrix<Bool>? = nil
+//            newMatrixCM = Matrix<Bool>(rows: rowMaxCM - rowMinCM + 1,
+//                                       columns: columnMaxCM - columnMinCM + 1,
+//                                       example: false)
+            single = Array(repeating: false,
+                           count: columnMaxCM - columnMinCM + 1)
+            var newDoubleDimensionalArrayCM = Array(repeating: single,
+                                                    count: rowMaxCM - rowMinCM + 1)
             
-            for i in 0..<newMatrixCM!.rows {
-                for j in 0..<newMatrixCM!.columns {
-                    newMatrixCM![i,j] = matrixCM![i + rowMinCM, j + columnMinCM]
+//            for i in 0..<newMatrixCM!.rows {
+//                for j in 0..<newMatrixCM!.columns {
+//                    newMatrixCM![i,j] = matrixCM![i + rowMinCM, j + columnMinCM]
+//                }
+//            }
+            
+            for i in 0..<newDoubleDimensionalArrayCM.count {
+                for j in 0..<newDoubleDimensionalArrayCM[0].count {
+                    newDoubleDimensionalArrayCM[i][j] = doubleDimensionalArrayCM[i + rowMinCM][j + columnMinCM]
                 }
             }
             
-            matrixCM = newMatrixCM
+//            matrixCM = newMatrixCM
+            doubleDimensionalArrayCM = newDoubleDimensionalArrayCM
+            newDoubleDimensionalArrayCM = []
+            single = []
+            
             //高宽比 = 矩阵的行数比上矩阵的列数
-            rateHW = CGFloat(matrixCM!.rows) / CGFloat(matrixCM!.columns)
-            newMatrixCM = nil
+//            rateHW = CGFloat(matrixCM!.rows) / CGFloat(matrixCM!.columns)
+            rateHW = CGFloat(doubleDimensionalArrayCM.count) / CGFloat(doubleDimensionalArrayCM[0].count)
+//            newMatrixCM = nil
             边缘检测后的侧面 = nil
             
             //取宽度
             //决定分多少层
-            for i in stride(from: 2, to: Int(matrixCM!.rows) - 1, by: 2) {
+//            for i in stride(from: 2, to: Int(matrixCM!.rows) - 1, by: 2) {
+//                
+//                var l = 0
+//                var r = 0
+//                var lr: [Int] = []
+//                
+//                for m in (1...2).reversed() {
+//                    for j in 0..<matrixCM!.columns {
+//                        guard !matrixCM![i - m,j] else {
+//                            l = j
+//                            continue
+//                        }
+//                    }
+//                    
+//                    for j in (0...(matrixCM!.columns - 1)).reversed() {
+//                        guard !matrixCM![i - m,j] else {
+//                            r = j
+//                            continue
+//                        }
+//                    }
+//                    lr.append(abs(r - l))
+//                }
+//                
+//                var sum: Int = 0
+//                
+//                for n in 0..<lr.count {
+//                    sum += lr[n]
+//                }
+//                
+//                widthArray.append(CGFloat(sum / lr.count))
+//                
+//            }
+            
+            for i in stride(from: 2, to: Int(doubleDimensionalArrayCM.count) - 1, by: 2) {
                 
                 var l = 0
                 var r = 0
                 var lr: [Int] = []
                 
                 for m in (1...2).reversed() {
-                    for j in 0..<matrixCM!.columns {
-                        guard !matrixCM![i - m,j] else {
+                    for j in 0..<doubleDimensionalArrayCM[0].count {
+                        guard !doubleDimensionalArrayCM[i - m][j] else {
                             l = j
                             continue
                         }
                     }
                     
-                    for j in (0...(matrixCM!.columns - 1)).reversed() {
-                        guard !matrixCM![i - m,j] else {
+                    for j in (0...(doubleDimensionalArrayCM[0].count - 1)).reversed() {
+                        guard !doubleDimensionalArrayCM[i - m][j] else {
                             r = j
                             continue
                         }
@@ -277,7 +367,8 @@ class FXViewController: UIViewController {
                 
             }
             
-            matrixCM = nil
+//            matrixCM = nil
+            doubleDimensionalArrayCM = []
             
             //摘除突变的层
             var temporary: [CGFloat] = []
@@ -355,9 +446,18 @@ class FXViewController: UIViewController {
         
         //底面的数据分析
         //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
-        matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.width / 2), columns: Int(边缘检测后的底面!.size.height / 2), example: false)
+//        matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.width / 2),
+//                                columns: Int(边缘检测后的底面!.size.height / 2),
+//                                example: false)
+        single = Array(repeating: false,
+                       count: Int(边缘检测后的底面!.size.height / 2))
+        doubleDimensionalArrayDM = Array(repeating: single,
+                                         count: Int(边缘检测后的底面!.size.width / 2))
+        single = []
+        
         start = CACurrentMediaTime()
         //取样间隔为2 先列后行
+//        print(边缘检测后的底面!.size.width)
         for i in stride(from: 0, to: Int(边缘检测后的底面!.size.width) - 1, by: 2) {
             for j in stride(from: 0, to: Int(边缘检测后的底面!.size.height) - 1, by: 2) {
                 //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
@@ -375,7 +475,10 @@ class FXViewController: UIViewController {
                     
                     if mean >= 0.3 {
                         //记录图片的信息到转置矩阵 前为行数后为列数
-                        matrixDM![i / 2, (Int(边缘检测后的底面!.size.height) - 1 - j) / 2] = true
+//                        matrixDM![i / 2, (Int(边缘检测后的底面!.size.height) - 1 - j) / 2] = true
+//                        print(i / 2)
+//                        print((Int(边缘检测后的底面!.size.height) - 1 - j) / 2)
+                        doubleDimensionalArrayDM[i / 2][(Int(边缘检测后的底面!.size.height) - 1 - j) / 2] = true
                     }
                 }
                 
@@ -389,9 +492,17 @@ class FXViewController: UIViewController {
         var columnMaxDM: Int = 0
         
         let seekRowMinDM = {
-            for i in 0..<matrixDM!.rows {
-                for j in 0..<matrixDM!.columns {
-                    if matrixDM![i,j] {
+//            for i in 0..<matrixDM!.rows {
+//                for j in 0..<matrixDM!.columns {
+//                    if matrixDM![i,j] {
+//                        rowMinDM = i
+//                        return
+//                    }
+//                }
+//            }
+            for i in 0..<doubleDimensionalArrayDM.count {
+                for j in 0..<doubleDimensionalArrayDM[0].count {
+                    if doubleDimensionalArrayDM[i][j] {
                         rowMinDM = i
                         return
                     }
@@ -400,9 +511,17 @@ class FXViewController: UIViewController {
         }
         
         let seekRowMaxDM = {
-            for i in (0..<matrixDM!.rows).reversed() {
-                for j in 0..<matrixDM!.columns {
-                    if matrixDM![i,j] {
+//            for i in (0..<matrixDM!.rows).reversed() {
+//                for j in 0..<matrixDM!.columns {
+//                    if matrixDM![i,j] {
+//                        rowMaxDM = i
+//                        return
+//                    }
+//                }
+//            }
+            for i in (0..<doubleDimensionalArrayDM.count).reversed() {
+                for j in 0..<doubleDimensionalArrayDM[0].count {
+                    if doubleDimensionalArrayDM[i][j] {
                         rowMaxDM = i
                         return
                     }
@@ -411,20 +530,36 @@ class FXViewController: UIViewController {
         }
         
         let seekColumnMinDM = {
-            for i in 0..<matrixDM!.columns {
-                for j in 0..<matrixDM!.rows {
-                    if matrixDM![j,i] {
+            for i in 0..<doubleDimensionalArrayDM[0].count {
+                for j in 0..<doubleDimensionalArrayDM.count {
+                    if doubleDimensionalArrayDM[j][i] {
                         columnMinDM = i
                         return
                     }
                 }
             }
+//            for i in 0..<matrixDM!.columns {
+//                for j in 0..<matrixDM!.rows {
+//                    if matrixDM![j,i] {
+//                        columnMinDM = i
+//                        return
+//                    }
+//                }
+//            }
         }
         
         let seekColumnMaxDM = {
-            for i in (0..<matrixDM!.columns).reversed() {
-                for j in 0..<matrixDM!.rows {
-                    if matrixDM![j,i] {
+//            for i in (0..<matrixDM!.columns).reversed() {
+//                for j in 0..<matrixDM!.rows {
+//                    if matrixDM![j,i] {
+//                        columnMaxDM = i
+//                        return
+//                    }
+//                }
+//            }
+            for i in (0..<doubleDimensionalArrayDM[0].count).reversed() {
+                for j in 0..<doubleDimensionalArrayDM.count {
+                    if doubleDimensionalArrayDM[j][i] {
                         columnMaxDM = i
                         return
                     }
@@ -467,17 +602,31 @@ class FXViewController: UIViewController {
         waitDMOne = false
         waitDMTwo = false
         
-        var newMatrixDM: Matrix<Bool>? = nil
-        newMatrixDM = Matrix<Bool>(rows: rowMaxDM - rowMinDM + 1, columns: columnMaxDM - columnMinDM + 1, example: false)
+//        var newMatrixDM: Matrix<Bool>? = nil
+//        newMatrixDM = Matrix<Bool>(rows: rowMaxDM - rowMinDM + 1, columns: columnMaxDM - columnMinDM + 1, example: false)
+        single = Array(repeating: false,
+                       count: columnMaxDM - columnMinDM + 1)
+        var newDoubleDimensionalArrayDM = Array(repeating: single,
+                                                count: rowMaxDM - rowMinDM + 1)
         
-        for i in 0..<newMatrixDM!.rows {
-            for j in 0..<newMatrixDM!.columns {
-                newMatrixDM![i,j] = matrixDM![i + rowMinDM, j + columnMinDM]
+//        for i in 0..<newMatrixDM!.rows {
+//            for j in 0..<newMatrixDM!.columns {
+//                newMatrixDM![i,j] = matrixDM![i + rowMinDM, j + columnMinDM]
+//            }
+//        }
+        
+        for i in 0..<newDoubleDimensionalArrayDM.count {
+            for j in 0..<newDoubleDimensionalArrayDM[0].count {
+                newDoubleDimensionalArrayDM[i][j] = doubleDimensionalArrayDM[i + rowMinDM][j + columnMinDM]
             }
         }
         
-        matrixDM = newMatrixDM
-        newMatrixDM = nil
+//        matrixDM = newMatrixDM
+//        newMatrixDM = nil
+        
+        doubleDimensionalArrayDM = newDoubleDimensionalArrayDM
+        newDoubleDimensionalArrayDM = []
+        single = []
         
         print("记录二维矩阵")
         print(CACurrentMediaTime() - start)
@@ -542,21 +691,41 @@ class FXViewController: UIViewController {
             return slopeArray
         }
         start = CACurrentMediaTime()
-        for i in 1..<(matrixDM!.rows - 1) {
-            for j in 1..<(matrixDM!.columns - 1) {
+//        for i in 1..<(matrixDM!.rows - 1) {
+//            for j in 1..<(matrixDM!.columns - 1) {
+//                //第三层门槛，再次减少冲击信号的干扰
+//                var around: Int = 0
+//                if matrixDM![i,j] {
+//                    //检查这个点周围为ture的点（包括它自己）是否小于4个，如果是，则认为它是冲击信号
+//                    for m in (i - 1)...(i + 1) {
+//                        for n in (j - 1)...(j + 1) {
+//                            if matrixDM![m,n] {
+//                                around += 1
+//                            }
+//                        }
+//                    }
+//                    if around < 4 {
+//                        matrixDM![i,j] = false
+//                    }
+//                }
+//            }
+//        }
+        
+        for i in 1..<(doubleDimensionalArrayDM.count - 1) {
+            for j in 1..<(doubleDimensionalArrayDM[0].count - 1) {
                 //第三层门槛，再次减少冲击信号的干扰
                 var around: Int = 0
-                if matrixDM![i,j] {
+                if doubleDimensionalArrayDM[i][j] {
                     //检查这个点周围为ture的点（包括它自己）是否小于4个，如果是，则认为它是冲击信号
                     for m in (i - 1)...(i + 1) {
                         for n in (j - 1)...(j + 1) {
-                            if matrixDM![m,n] {
+                            if doubleDimensionalArrayDM[m][n] {
                                 around += 1
                             }
                         }
                     }
                     if around < 4 {
-                        matrixDM![i,j] = false
+                        doubleDimensionalArrayDM[i][j] = false
                     }
                 }
             }
@@ -564,16 +733,54 @@ class FXViewController: UIViewController {
         print(1)
         print(CACurrentMediaTime() - start)
         
+//        func basicOperationDMTwo() {
+//            //        第一步：创建Operation
+//            let op = Operation.init()
+//            //        第二步：把要执行的代码放入operation中
+//            op.completionBlock = {
+//                
+//                for i in 0..<matrixDM!.rows {
+//                    //左横向筛选有点的行,并记录坐标
+//                    for j in 0..<matrixDM!.columns {
+//                        guard !matrixDM![i,j] else {
+//                            guard checkH(a: i, array: arrayZH!) else {
+//                                //x 代表行数，y 代表列数
+//                                arrayZH!.append(CGPoint(x: i, y: j))
+//                                continue
+//                            }
+//                            continue
+//                        }
+//                    }
+//                    //右横向筛选有点的行,并记录坐标
+//                    for j in (0...(matrixDM!.columns - 1)).reversed() {
+//                        guard !matrixDM![i,j] else {
+//                            guard checkH(a: i, array: arrayYH!) else {
+//                                //x 代表行数，y 代表列数
+//                                arrayYH!.append(CGPoint(x: i, y: j))
+//                                continue
+//                            }
+//                            continue
+//                        }
+//                    }
+//                }
+//                waitDMTwo = true
+//            }
+//            //        第三步：创建OperationQueue
+//            let opQueue = OperationQueue.init()
+//            //        第四步：把Operation加入到线程中
+//            opQueue.addOperation(op)
+//        }
+        
         func basicOperationDMTwo() {
             //        第一步：创建Operation
             let op = Operation.init()
             //        第二步：把要执行的代码放入operation中
             op.completionBlock = {
                 
-                for i in 0..<matrixDM!.rows {
+                for i in 0..<doubleDimensionalArrayDM.count {
                     //左横向筛选有点的行,并记录坐标
-                    for j in 0..<matrixDM!.columns {
-                        guard !matrixDM![i,j] else {
+                    for j in 0..<doubleDimensionalArrayDM[0].count{
+                        guard !doubleDimensionalArrayDM[i][j] else {
                             guard checkH(a: i, array: arrayZH!) else {
                                 //x 代表行数，y 代表列数
                                 arrayZH!.append(CGPoint(x: i, y: j))
@@ -583,8 +790,8 @@ class FXViewController: UIViewController {
                         }
                     }
                     //右横向筛选有点的行,并记录坐标
-                    for j in (0...(matrixDM!.columns - 1)).reversed() {
-                        guard !matrixDM![i,j] else {
+                    for j in (0...(doubleDimensionalArrayDM[0].count - 1)).reversed() {
+                        guard !doubleDimensionalArrayDM[i][j] else {
                             guard checkH(a: i, array: arrayYH!) else {
                                 //x 代表行数，y 代表列数
                                 arrayYH!.append(CGPoint(x: i, y: j))
@@ -605,10 +812,35 @@ class FXViewController: UIViewController {
         
         basicOperationDMTwo()
         
-        for j in 0..<matrixDM!.columns {
+//        for j in 0..<matrixDM!.columns {
+//            //上纵向筛选有点的列,并记录坐标
+//            for i in 0..<matrixDM!.rows {
+//                guard !matrixDM![i,j] else {
+//                    guard checkZ(a: j, array: arraySZ!) else {
+//                        //x 代表行数，y 代表列数
+//                        arraySZ!.append(CGPoint(x: i, y: j))
+//                        continue
+//                    }
+//                    continue
+//                }
+//            }
+//            //下纵向筛选有点的列,并记录坐标
+//            for i in (0...(matrixDM!.rows - 1)).reversed() {
+//                guard !matrixDM![i,j] else {
+//                    guard checkZ(a: j, array: arrayXZ!) else {
+//                        //x 代表行数，y 代表列数
+//                        arrayXZ!.append(CGPoint(x: i, y: j))
+//                        continue
+//                    }
+//                    continue
+//                }
+//            }
+//        }
+        
+        for j in 0..<doubleDimensionalArrayDM[0].count {
             //上纵向筛选有点的列,并记录坐标
-            for i in 0..<matrixDM!.rows {
-                guard !matrixDM![i,j] else {
+            for i in 0..<doubleDimensionalArrayDM.count {
+                guard !doubleDimensionalArrayDM[i][j] else {
                     guard checkZ(a: j, array: arraySZ!) else {
                         //x 代表行数，y 代表列数
                         arraySZ!.append(CGPoint(x: i, y: j))
@@ -618,8 +850,8 @@ class FXViewController: UIViewController {
                 }
             }
             //下纵向筛选有点的列,并记录坐标
-            for i in (0...(matrixDM!.rows - 1)).reversed() {
-                guard !matrixDM![i,j] else {
+            for i in (0...(doubleDimensionalArrayDM.count - 1)).reversed() {
+                guard !doubleDimensionalArrayDM[i][j] else {
                     guard checkZ(a: j, array: arrayXZ!) else {
                         //x 代表行数，y 代表列数
                         arrayXZ!.append(CGPoint(x: i, y: j))
@@ -629,6 +861,7 @@ class FXViewController: UIViewController {
                 }
             }
         }
+        
         waitDMOne = true
         while !waitDMOne || !waitDMTwo {
             //等待
@@ -835,7 +1068,8 @@ class FXViewController: UIViewController {
         yMin = nil
         o = nil
         simplePoint = []
-        matrixDM = nil
+//        matrixDM = nil
+        doubleDimensionalArrayDM = []
         
         waitZ2 = true
         
