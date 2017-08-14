@@ -24,7 +24,7 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             let myStoryBoard = self.storyboard
             let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "ShowCeMianViewController"))! as UIViewController
             self.present(anotherView, animated: true, completion: nil)
-        } catch EnrollError.NoImageFound {
+        } catch EnrollError.noImageFound {
             let a = UIAlertController(title: "错误",
                                       message: "请选择图片后再进入下一步",
                                       preferredStyle: UIAlertControllerStyle.alert)

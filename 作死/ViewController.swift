@@ -28,7 +28,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let myStoryBoard = self.storyboard
             let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SobelEdgeDetection"))! as UIViewController
             self.present(anotherView, animated: true, completion: nil)
-        } catch EnrollError.NoImageFound {
+        } catch EnrollError.noImageFound {
             //解决错误
             let a = UIAlertController(title: "错误",
                                       message: "请选择图片后再进入下一步",
@@ -92,7 +92,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         //显示的图片，并且做处理
         底面 = info[UIImagePickerControllerOriginalImage] as? UIImage
         imageView.frame = CGRect(x: 0,
-                                 y: (self.view.frame.height / 2) - (底面!.size.height * self.view.frame.width / 底面!.size.width) / 2,
+                                 y: (self.view.frame.height / 2) - (底面!.size.height * self.view.frame.width / 底面!.size.width) / 2 + 34,
                                  width: self.view.frame.width,
                                  height: 底面!.size.height * self.view.frame.width / 底面!.size.width)
         imageView.image = 底面
@@ -122,7 +122,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let select: UIButton = UIButton(type: .system)
         select.frame = CGRect(x: 16,
-                              y: 20,
+                              y: 72,
                               width: 100,
                               height: 30)
         select.setTitle("选择图片", for: UIControlState.normal)
@@ -131,7 +131,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let next: UIButton = UIButton(type: .system)
         next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                            y: 20,
+                            y: 72,
                             width: 100,
                             height: 30)
         next.setTitle("下一步", for: UIControlState.normal)

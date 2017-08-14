@@ -20,7 +20,7 @@ class FXViewController: UIViewController {
             let myStoryBoard = self.storyboard
             let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
             self.present(anotherView, animated: true, completion: nil)
-        } catch EnrollError.InsufficientPoints {
+        } catch EnrollError.insufficientPoints {
             let a = UIAlertController(title: "错误",
                                       message: "至少添加3个顶点才能围成一个面",
                                       preferredStyle: UIAlertControllerStyle.alert)
@@ -70,7 +70,7 @@ class FXViewController: UIViewController {
             candidate = nil
             allow = true
             num += 1
-        } catch EnrollError.NoPointFound {
+        } catch EnrollError.noPointFound {
             let a = UIAlertController(title: "错误",
                                       message: "请选择要添加为顶点的点",
                                       preferredStyle: UIAlertControllerStyle.alert)
