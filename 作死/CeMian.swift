@@ -10,20 +10,12 @@ import UIKit
 import Photos
 
 //获取侧面
-class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
-    let imageView = UIImageView()
-    
-    func selector() {
-        present(selectorController, animated: true, completion: nil)
-    }
+class CeMian: SelectTheImageUIViewController {
     
     func theNextStep() {
         do {
             try isThereAnImage(侧面)
-            let myStoryBoard = self.storyboard
-            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "ShowCeMianViewController"))! as UIViewController
-            self.present(anotherView, animated: true, completion: nil)
+            skip("ShowCeMianViewController")
         } catch EnrollError.noImageFound {
             let a = UIAlertController(title: "错误",
                                       message: "请选择图片后再进入下一步",
@@ -37,35 +29,6 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             self.present(a, animated: true, completion: nil)
         } catch {
             print("未知错误")
-        }
-    }
-    
-    func fromPhotoLibrary() {
-        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-            let picker = UIImagePickerController()
-            picker.delegate = self
-            picker.sourceType = UIImagePickerControllerSourceType.photoLibrary
-            self.present(picker, animated: true, completion: {
-                () -> Void in
-            })
-        }else{
-            print("读取相册错误")
-        }
-    }
-    
-    var flag: Bool = false
-    
-    func fromCamera() {
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            flag = true
-            let picker = UIImagePickerController()
-            picker.delegate = self
-            picker.sourceType = UIImagePickerControllerSourceType.camera
-            self.present(picker, animated: true, completion: {
-                () -> Void in
-            })
-        }else{
-            print("启动照相机错误")
         }
     }
     
@@ -88,7 +51,7 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
                 } else {
                     print("保存失败：", error!.localizedDescription)
                 }
-                } as? (Bool, Error?) -> Void)
+            } as? (Bool, Error?) -> Void)
             flag = false
         }
         
@@ -100,7 +63,7 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let select: UIButton = UIButton(type: .system)
+        let select = UIButton(type: .system)
         select.frame = CGRect(x: 16,
                               y: 20,
                               width: 100,
@@ -109,7 +72,7 @@ class CeMian: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         select.addTarget(self, action: #selector(CeMian.selector), for:.touchUpInside)
         self.view.addSubview(select)
         
-        let next: UIButton = UIButton(type: .system)
+        let next = UIButton(type: .system)
         next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                             y: 20,
                             width: 100,

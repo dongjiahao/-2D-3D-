@@ -56,7 +56,7 @@ class MenuTableViewController: UITableViewController {
             try whetherTndexOutOfRange(indexPath.row, viewArr.count)
             let itemString = self.viewArr[indexPath.row]
             let myStoryBoard = self.storyboard
-            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: itemString))! as UIViewController
+            let anotherView: UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: itemString))! as UIViewController
             self.navigationController?.show(anotherView, sender: myStoryBoard)          //shou:自带返回
             //        self.present(anotherView, animated: true, completion: nil)        //不返回
         } catch EnrollError.indexOutOfRange {

@@ -307,7 +307,7 @@ class FXViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let rem: UIButton = UIButton(type: .system)
+        let rem = UIButton(type: .system)
         rem.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                            y: 20,
                            width: 100,
@@ -316,7 +316,7 @@ class FXViewController: UIViewController {
         rem.addTarget(self, action: #selector(FXViewController.remove), for:.touchUpInside)
         self.view.addSubview(rem)
         
-        let rep: UIButton = UIButton(type: .system)
+        let rep = UIButton(type: .system)
         rep.frame = CGRect(x: 16,
                            y: 20,
                            width: 100,
@@ -325,7 +325,7 @@ class FXViewController: UIViewController {
         rep.addTarget(self, action: #selector(FXViewController.repeal), for:.touchUpInside)
         self.view.addSubview(rep)
         
-        let add: UIButton = UIButton(type: .system)
+        let add = UIButton(type: .system)
         add.frame = CGRect(x: self.view.frame.width - 110,
                            y: 20,
                            width: 100,
@@ -334,7 +334,7 @@ class FXViewController: UIViewController {
         add.addTarget(self, action: #selector(FXViewController.addP), for:.touchUpInside)
         self.view.addSubview(add)
         
-        let qX: UIButton = UIButton(type: .system)
+        let qX = UIButton(type: .system)
         qX.frame = CGRect(x: self.view.frame.width - 160,
                           y: 60,
                           width: 150,
@@ -343,7 +343,7 @@ class FXViewController: UIViewController {
         qX.addTarget(self, action: #selector(FXViewController.qXAddP), for:.touchUpInside)
         self.view.addSubview(qX)
         
-        let ne: UIButton = UIButton(type: .system)
+        let ne = UIButton(type: .system)
         ne.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                           y: 60,
                           width: 100,

@@ -11,30 +11,7 @@ import GPUImage
 import Photos
 
 //侧面边缘检测
-class ShowCeMianViewController: UIViewController {
-    
-    var imagePicture: GPUImagePicture? = GPUImagePicture()
-    
-    func showImage() {
-        
-        let myStoryBoard = self.storyboard
-        let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "FXViewController"))! as UIViewController
-        self.present(anotherView, animated: true, completion: nil)
-        
-    }
-    
-    func sharePhoto() {
-        //保存图片
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAsset(from: 边缘检测后的侧面!)
-        }, completionHandler: { (isSuccess: Bool, error: NSError?) in
-            if isSuccess {
-                print("保存成功!")
-            } else {
-                print("保存失败：", error!.localizedDescription)
-            }
-            } as? (Bool, Error?) -> Void)
-    }
+class ShowCeMianViewController: FilterUIViewController {
     
     //    func xZBianHuan() {
     //        //翻转图片的方向
@@ -56,53 +33,28 @@ class ShowCeMianViewController: UIViewController {
         
 //        var imageView: GPUImageView? = GPUImageView(frame: self.view.frame)
 //        self.view = imageView
-        imagePicture = GPUImagePicture(image: 侧面!)
+        
+        边缘检测后的侧面 = eDFilter(inputImage: gBFilter(inputImage: 侧面!, strength: 4), strength: 7)
         侧面 = nil
         
-        var gaussianBlurFilter: GPUImageGaussianBlurFilter? = GPUImageGaussianBlurFilter()
-        //模糊处理程度，值越大，噪声影响越小，但会少量降低边界清晰度
-        gaussianBlurFilter!.texelSpacingMultiplier = 4
-        
-        var edgeDetectionFilter: GPUImageSobelEdgeDetectionFilter? = GPUImageSobelEdgeDetectionFilter()
-        //边界检测强度，值越大，边界线约清晰，但会少量增加噪声数量和强度
-        edgeDetectionFilter!.edgeStrength = 7
-        
-        imagePicture!.addTarget(gaussianBlurFilter)
-        gaussianBlurFilter!.addTarget(self.view as! GPUImageInput!)
-        imagePicture!.processImage()
-        gaussianBlurFilter!.useNextFrameForImageCapture()
-        边缘检测后的侧面 = gaussianBlurFilter!.imageFromCurrentFramebuffer()
-        
-        gaussianBlurFilter = nil
-        
-        
-        imagePicture = GPUImagePicture(image: 边缘检测后的侧面)
-        imagePicture!.addTarget(edgeDetectionFilter)
-        edgeDetectionFilter!.addTarget(self.view as! GPUImageInput!)
-        imagePicture!.processImage()
-        //获取图片
-        edgeDetectionFilter!.useNextFrameForImageCapture()
-        边缘检测后的侧面 = edgeDetectionFilter!.imageFromCurrentFramebuffer()
-        
-        edgeDetectionFilter = nil
-        imagePicture = nil
-        
-        let next: UIButton = UIButton(type: .system)
+        let next = JumpButton(type: .system)
         next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                             y: 20,
                             width: 100,
                             height: 30)
         next.setTitle("下一步", for: UIControlState.normal)
-        next.addTarget(self, action: #selector(ShowCeMianViewController.showImage), for:.touchUpInside)
+        next.string = "FXViewController"
+        next.addTarget(self, action: #selector(ShowCeMianViewController.jump(_ :)), for:.touchUpInside)
         self.view.addSubview(next)
         
-        let share: UIButton = UIButton(type: .system)
+        let share = ImageButton(type: .system)
         share.frame = CGRect(x: self.view.frame.width - 116,
                              y: 20,
                              width: 100,
                              height: 30)
         share.setTitle("保存图片", for: UIControlState.normal)
-        share.addTarget(self, action: #selector(ShowCeMianViewController.sharePhoto), for:.touchUpInside)
+        share.image = 边缘检测后的侧面
+        share.addTarget(self, action: #selector(ShowCeMianViewController.sharePhoto(_ :)), for:.touchUpInside)
         self.view.addSubview(share)
         
         //        let xuanZhuan: UIButton = UIButton(type: .system)

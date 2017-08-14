@@ -10,24 +10,15 @@ import UIKit
 import Photos
 
 //获取底面
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    //用来展示所选底面的UIImageView
-    let imageView = UIImageView()
-    
-    //选择器调用函数，三个选项“拍照选择”、“相册选择”、“取消”，用于选择底面的图片
-    func selector() {
-        present(selectorController, animated: true, completion: nil)
-    }
+class ViewController: SelectTheImageUIViewController {
+
     //下一步
     func theNextStep() {
         //错误处理
         do {
             //抛出错误
             try isThereAnImage(底面)
-            let myStoryBoard = self.storyboard
-            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SobelEdgeDetection"))! as UIViewController
-            self.present(anotherView, animated: true, completion: nil)
+            skip("SobelEdgeDetection")
         } catch EnrollError.noImageFound {
             //解决错误
             let a = UIAlertController(title: "错误",
@@ -42,47 +33,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             self.present(a, animated: true, completion: nil)
         } catch {
             print("未知错误")
-        }
-    }
-    
-    //相册调用函数
-    func fromPhotoLibrary() {
-        //判断设置是否支持图片库
-        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-            //初始化图片控制器
-            let picker = UIImagePickerController()
-            //设置代理
-            picker.delegate = self
-            //指定图片控制器类型
-            picker.sourceType = UIImagePickerControllerSourceType.photoLibrary
-            //弹出控制器，显示界面
-            self.present(picker, animated: true, completion: {
-                () -> Void in
-            })
-        }else{
-            print("读取相册错误")
-        }
-    }
-    //是否调用过照相机的标记，调用过照相机为 true，反之为 false
-    var flag: Bool = false
-    
-    //照相机调用函数
-    func fromCamera() {
-        //判断设置是否支持照相机
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            flag = true
-            let picker = UIImagePickerController()
-            picker.delegate = self
-            picker.sourceType = UIImagePickerControllerSourceType.camera
-//            picker.showsCameraControls = false
-//            let cameraTransform = CGAffineTransform(scaleX: 9, y: 16)
-//            picker.cameraViewTransform = cameraTransform
-//            picker.cameraOverlayView = self.view
-            self.present(picker, animated: true, completion: {
-                () -> Void in
-            })
-        }else{
-            print("启动照相机错误")
         }
     }
     
@@ -107,7 +57,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 } else {
                     print("保存失败：", error!.localizedDescription)
                 }
-                } as? (Bool, Error?) -> Void)
+            } as? (Bool, Error?) -> Void)
             flag = false
         }
         
@@ -120,7 +70,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let select: UIButton = UIButton(type: .system)
+        let select = UIButton(type: .system)
         select.frame = CGRect(x: 16,
                               y: 72,
                               width: 100,
@@ -129,7 +79,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         select.addTarget(self, action: #selector(ViewController.selector), for:.touchUpInside)
         self.view.addSubview(select)
         
-        let next: UIButton = UIButton(type: .system)
+        let next = UIButton(type: .system)
         next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
                             y: 72,
                             width: 100,

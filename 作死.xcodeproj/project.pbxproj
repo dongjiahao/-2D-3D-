@@ -21,6 +21,9 @@
 		8C83CFBD1F21B9DC001F7421 /* SceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C83CFBC1F21B9DC001F7421 /* SceneView.swift */; };
 		8C83CFC21F21BB27001F7421 /* a.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C83CFC11F21BB27001F7421 /* a.scnassets */; };
 		8C8574611F4131BA0011B11D /* MenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8574601F4131BA0011B11D /* MenuTableViewController.swift */; };
+		8C8574631F4156B50011B11D /* ErrorHandlingFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8574621F4156B50011B11D /* ErrorHandlingFile.swift */; };
+		8C8574651F4157240011B11D /* ClassFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8574641F4157240011B11D /* ClassFile.swift */; };
+		8C8574671F4157A60011B11D /* StructFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8574661F4157A60011B11D /* StructFile.swift */; };
 		8CB777E41F1631D4004592E5 /* FXViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB777E31F1631D4004592E5 /* FXViewController.swift */; };
 		F055D5817466A050A10C4E52 /* Pods___.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3768FA0B2ECC040B5732D649 /* Pods___.framework */; };
 /* End PBXBuildFile section */
@@ -65,6 +68,9 @@
 		8C83CFBC1F21B9DC001F7421 /* SceneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneView.swift; sourceTree = "<group>"; };
 		8C83CFC11F21BB27001F7421 /* a.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = a.scnassets; sourceTree = "<group>"; };
 		8C8574601F4131BA0011B11D /* MenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
+		8C8574621F4156B50011B11D /* ErrorHandlingFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandlingFile.swift; sourceTree = "<group>"; };
+		8C8574641F4157240011B11D /* ClassFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassFile.swift; sourceTree = "<group>"; };
+		8C8574661F4157A60011B11D /* StructFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructFile.swift; sourceTree = "<group>"; };
 		8CB777E31F1631D4004592E5 /* FXViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FXViewController.swift; sourceTree = "<group>"; };
 		8CC435281F1EE73F003F97CC /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		F3B1D98F90D97667A9D30554 /* Pods-作死.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-作死.release.xcconfig"; path = "Pods/Target Support Files/Pods-作死/Pods-作死.release.xcconfig"; sourceTree = "<group>"; };
@@ -132,6 +138,9 @@
 			children = (
 				8C2F06331EBED091001E79A7 /* AppDelegate.swift */,
 				8C115C0F1EC01F9D0074A66C /* File.swift */,
+				8C8574661F4157A60011B11D /* StructFile.swift */,
+				8C8574641F4157240011B11D /* ClassFile.swift */,
+				8C8574621F4156B50011B11D /* ErrorHandlingFile.swift */,
 				8C8574601F4131BA0011B11D /* MenuTableViewController.swift */,
 				8C2F06351EBED091001E79A7 /* ViewController.swift */,
 				8C115C111EC0241A0074A66C /* SobelEdgeDetection.swift */,
@@ -366,11 +375,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C115C121EC0241A0074A66C /* SobelEdgeDetection.swift in Sources */,
+				8C8574651F4157240011B11D /* ClassFile.swift in Sources */,
 				8C2F06361EBED091001E79A7 /* ViewController.swift in Sources */,
 				8C83CFBD1F21B9DC001F7421 /* SceneView.swift in Sources */,
+				8C8574631F4156B50011B11D /* ErrorHandlingFile.swift in Sources */,
 				8C115C101EC01F9D0074A66C /* File.swift in Sources */,
 				8CB777E41F1631D4004592E5 /* FXViewController.swift in Sources */,
 				8C8574611F4131BA0011B11D /* MenuTableViewController.swift in Sources */,
+				8C8574671F4157A60011B11D /* StructFile.swift in Sources */,
 				8C4143151F31853B002156E4 /* CeMian.swift in Sources */,
 				8C4143171F31897E002156E4 /* ShowCeMianViewController.swift in Sources */,
 				8C2F06341EBED091001E79A7 /* AppDelegate.swift in Sources */,
