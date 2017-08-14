@@ -20,6 +20,8 @@ extension UIViewController {
     }
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //用来展示所选底面的UIImageView
@@ -90,6 +92,8 @@ class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerD
     }
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 class FilterUIViewController: UIViewController {
     
     //gaussianBlurFilter
@@ -148,13 +152,19 @@ class FilterUIViewController: UIViewController {
     }
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 final class ImageButton: UIButton {
     var image: UIImage? = nil
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 final class JumpButton: UIButton {
     var string: String = ""
 }
+
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 //可以记录自己坐标及状态的 Button
 final class MyButton: UIButton {
@@ -199,6 +209,8 @@ final class MyButton: UIButton {
     
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 extension UIImage{
     /**
      获取图片中的像素颜色值
@@ -226,6 +238,8 @@ extension UIImage{
     }
 }
 
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 final class ListNode {
     //定义节点
     var val: MyButton
@@ -235,6 +249,8 @@ final class ListNode {
         self.next = nil
     }
 }
+
+//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 final class List {
     //定义链表
