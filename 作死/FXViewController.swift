@@ -11,15 +11,22 @@ import UIKit
 //从数据上分析出物体的形状特征
 class FXViewController: UIViewController {
     
-    var num: Int = 0  //记录添加的点数
+    //记录添加的点数
+    var num: Int = 0
+    //候选的UIButton
+    var candidate: MyButton?
+    //是否允许选中点的标志
+    var allow: Bool = true
+    //等待指示
+    //CM() 和 viewDidLoad() 都完成工作才进行下一步任务
+    var waitZ1 = false
+    var waitZ2 = false
     
     //跳转到下一个页面
     func nextView() {
         do {
             try areThereEnoughPoints(num)
-            let myStoryBoard = self.storyboard
-            let anotherView:UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: "SceneView"))! as UIViewController
-            self.present(anotherView, animated: true, completion: nil)
+            skip("SceneView")
         } catch EnrollError.insufficientPoints {
             let a = UIAlertController(title: "错误",
                                       message: "至少添加3个顶点才能围成一个面",
@@ -32,11 +39,6 @@ class FXViewController: UIViewController {
             print("未知错误")
         }
     }
-    
-    //候选的UIButton
-    var candidate: MyButton?
-    //是否允许选中点的标志
-    var allow: Bool = true
     
     //点击为选中状态
     func awaitOrders(_ button: MyButton) {
@@ -92,10 +94,144 @@ class FXViewController: UIViewController {
         }
     }
     
-    //等待指示
-    //CM() 和 viewDidLoad() 都完成工作才进行下一步任务
-    var waitZ1 = false
-    var waitZ2 = false
+    func initMatrix(_ image: UIImage) -> Matrix<Bool> {
+        //面的数据分析
+        //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
+        var matrix = Matrix<Bool>(rows: Int(image.size.width / 2),
+                                columns: Int(image.size.height / 2),
+                                example: false)
+        //取样间隔为2 先列后行
+        for i in stride(from: 0, to: Int(image.size.width) - 1, by: 2) {
+            for j in stride(from: 0, to: Int(image.size.height) - 1, by: 2) {
+                //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
+                if image.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
+                    //第二层门槛，起到medianBlur(中值滤波)的作用
+                    //mean 记录以一点为中心周围25个点的灰度平均值
+                    var mean: CGFloat = 0
+                    for m in (i - 2)...(i + 2) {
+                        for n in (j - 2)...(j + 2) {
+                            mean += image.getPixelColor(pos: CGPoint(x: m, y: n)).y
+                        }
+                    }
+                    
+                    mean /= 25
+                    
+                    if mean >= 0.3 {
+                        //记录图片的信息到转置矩阵 前为行数后为列数
+                        matrix[i / 2, (Int(image.size.height) - 1 - j) / 2] = true
+                    }
+                }
+                
+            }
+        }
+        return matrix
+    }
+    
+    //找出行列的最大值和最小值
+    func CreateNewMatrix(_ old: Matrix<Bool>) -> Matrix<Bool> {
+        //缩小矩阵的大小，摘除多余的行和列
+        //行的最小值
+        var rowMin: Int = 0
+        //行的最大值
+        var rowMax: Int = 0
+        //列的最小值
+        var columnMin: Int = 0
+        //列的最大值
+        var columnMax: Int = 0
+        
+        //寻找行的最小值的闭包
+        let seekRowMin = {
+            for i in 0..<old.rows {
+                for j in 0..<old.columns {
+                    if old[i,j] {
+                        rowMin = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        //寻找行的最大值的闭包
+        let seekRowMax = {
+            for i in (0..<old.rows).reversed() {
+                for j in 0..<old.columns {
+                    if old[i,j] {
+                        rowMax = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        //寻找列的最小值的闭包
+        let seekColumnMin = {
+            for i in 0..<old.columns {
+                for j in 0..<old.rows {
+                    if old[j,i] {
+                        columnMin = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        //寻找列的最大值的闭包
+        let seekColumnMax = {
+            for i in (0..<old.columns).reversed() {
+                for j in 0..<old.rows {
+                    if old[j,i] {
+                        columnMax = i
+                        return
+                    }
+                }
+            }
+        }
+        
+        //等待指示
+        //basicOperationCMOne() 和 下面的代码都完成工作才进行下一步任务
+        var waitOne: Bool = false
+        var waitTwo: Bool = false
+        
+        //开启一个新的线程
+        func basicOperation() {
+            //        第一步：创建Operation
+            let op = Operation.init()
+            //        第二步：把要执行的代码放入operation中
+            op.completionBlock = {
+                
+                seekRowMax()
+                seekColumnMax()
+                waitTwo = true
+                
+            }
+            //        第三步：创建OperationQueue
+            let opQueue = OperationQueue.init()
+            //        第四步：把Operation加入到线程中
+            opQueue.addOperation(op)
+        }
+        
+        basicOperation()
+        
+        seekRowMin()
+        seekColumnMin()
+        waitOne = true
+        while !waitOne || !waitTwo {
+            //等待
+        }
+        
+        //重建新的矩阵
+        var new = Matrix<Bool>(rows: rowMax - rowMin + 1,
+                                    columns: columnMax - columnMin + 1,
+                                    example: false)
+        
+        for i in 0..<new.rows {
+            for j in 0..<new.columns {
+                new[i,j] = old[i + rowMin, j + columnMin]
+            }
+        }
+        
+        return new
+    }
     
     //处理侧面的函数，该函数单开一个线程
     func CM() {
@@ -103,145 +239,13 @@ class FXViewController: UIViewController {
         let cm = Operation.init()
         //        第二步：把要执行的代码放入operation中
         cm.completionBlock = {
-            //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
-            matrixCM = Matrix<Bool>(rows: Int(边缘检测后的侧面!.size.width / 2),
-                                    columns: Int(边缘检测后的侧面!.size.height / 2),
-                                    example: false)
             
-            //取样间隔为2 先列后行
-            for i in stride(from: 0, to: Int(边缘检测后的侧面!.size.width) - 1, by: 2) {
-                for j in stride(from: 0, to: Int(边缘检测后的侧面!.size.height) - 1, by: 2) {
-                    //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
-                    if 边缘检测后的侧面!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
-                        //第二层门槛，起到medianBlur(中值滤波)的作用
-                        //mean 记录以一点为中心周围25个点的灰度平均值
-                        var mean: CGFloat = 0
-                        for m in (i - 2)...(i + 2) {
-                            for n in (j - 2)...(j + 2) {
-                                mean += 边缘检测后的侧面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
-                            }
-                        }
-                        
-                        mean /= 25
-                        
-                        if mean >= 0.3 {
-                            //记录图片的信息到s的转置矩阵 前为行数后为列数
-                            matrixCM![i / 2, (Int(边缘检测后的侧面!.size.height) - 1 - j) / 2] = true
-                        }
-                    }
-                    
-                }
-            }
-            
-            //缩小矩阵的大小，摘除多余的行和列
-            //行的最小值
-            var rowMinCM: Int = 0
-            //行的最大值
-            var rowMaxCM: Int = 0
-            //列的最小值
-            var columnMinCM: Int = 0
-            //列的最大值
-            var columnMaxCM: Int = 0
-            
-            //寻找行的最小值的闭包
-            let seekRowMinCM = {
-                for i in 0..<matrixCM!.rows {
-                    for j in 0..<matrixCM!.columns {
-                        if matrixCM![i,j] {
-                            rowMinCM = i
-                            return
-                        }
-                    }
-                }
-            }
-            
-            //寻找行的最大值的闭包
-            let seekRowMaxCM = {
-                for i in (0..<matrixCM!.rows).reversed() {
-                    for j in 0..<matrixCM!.columns {
-                        if matrixCM![i,j] {
-                            rowMaxCM = i
-                            return
-                        }
-                    }
-                }
-            }
-            
-            //寻找列的最小值的闭包
-            let seekColumnMinCM = {
-                for i in 0..<matrixCM!.columns {
-                    for j in 0..<matrixCM!.rows {
-                        if matrixCM![j,i] {
-                            columnMinCM = i
-                            return
-                        }
-                    }
-                }
-            }
-            
-            //寻找列的最大值的闭包
-            let seekColumnMaxCM = {
-                for i in (0..<matrixCM!.columns).reversed() {
-                    for j in 0..<matrixCM!.rows {
-                        if matrixCM![j,i] {
-                            columnMaxCM = i
-                            return
-                        }
-                    }
-                }
-            }
-            
-            //等待指示
-            //basicOperationCMOne() 和 下面的代码都完成工作才进行下一步任务
-            var waitCMOne: Bool = false
-            var waitCMTwo: Bool = false
-            
-            //开启一个新的线程
-            func basicOperationCMOne() {
-                //        第一步：创建Operation
-                let op = Operation.init()
-                //        第二步：把要执行的代码放入operation中
-                op.completionBlock = {
-                    
-                    seekRowMaxCM()
-                    seekColumnMaxCM()
-                    waitCMTwo = true
-                    
-                }
-                //        第三步：创建OperationQueue
-                let opQueue = OperationQueue.init()
-                //        第四步：把Operation加入到线程中
-                opQueue.addOperation(op)
-            }
-            
-            basicOperationCMOne()
-            
-            seekRowMinCM()
-            seekColumnMinCM()
-            waitCMOne = true
-            while !waitCMOne || !waitCMTwo {
-                //等待
-            }
-            waitCMOne = false
-            waitCMTwo = false
-            
-            //重建新的矩阵
-            var newMatrixCM: Matrix<Bool>? = nil
-            newMatrixCM = Matrix<Bool>(rows: rowMaxCM - rowMinCM + 1,
-                                       columns: columnMaxCM - columnMinCM + 1,
-                                       example: false)
-            
-            for i in 0..<newMatrixCM!.rows {
-                for j in 0..<newMatrixCM!.columns {
-                    newMatrixCM![i,j] = matrixCM![i + rowMinCM, j + columnMinCM]
-                }
-            }
-            
-            matrixCM = newMatrixCM
+            //二维矩阵储存：像素化的图片再经筛选后的点
+            //侧面
+            var matrixCM: Matrix<Bool>? = self.CreateNewMatrix(self.initMatrix(边缘检测后的侧面!))
             
             //高宽比 = 矩阵的行数比上矩阵的列数
             rateHW = CGFloat(matrixCM!.rows) / CGFloat(matrixCM!.columns)
-            newMatrixCM = nil
             边缘检测后的侧面 = nil
             
             //取宽度
@@ -307,184 +311,48 @@ class FXViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let rem = UIButton(type: .system)
-        rem.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                           y: 20,
-                           width: 100,
-                           height: 30)
-        rem.setTitle("移除点", for: UIControlState.normal)
-        rem.addTarget(self, action: #selector(FXViewController.remove), for:.touchUpInside)
-        self.view.addSubview(rem)
+        initButton(title: "移除点",
+                   x: self.view.frame.width * 0.5 - 50,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   function: #selector(FXViewController.remove))
         
-        let rep = UIButton(type: .system)
-        rep.frame = CGRect(x: 16,
-                           y: 20,
-                           width: 100,
-                           height: 30)
-        rep.setTitle("取消选中", for: UIControlState.normal)
-        rep.addTarget(self, action: #selector(FXViewController.repeal), for:.touchUpInside)
-        self.view.addSubview(rep)
+        initButton(title: "取消选中",
+                   x: 16,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   function: #selector(FXViewController.repeal))
         
-        let add = UIButton(type: .system)
-        add.frame = CGRect(x: self.view.frame.width - 110,
-                           y: 20,
-                           width: 100,
-                           height: 30)
-        add.setTitle("添加顶点", for: UIControlState.normal)
-        add.addTarget(self, action: #selector(FXViewController.addP), for:.touchUpInside)
-        self.view.addSubview(add)
+        initButton(title: "添加顶点",
+                   x: self.view.frame.width - 110,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   function: #selector(FXViewController.addP))
         
-        let qX = UIButton(type: .system)
-        qX.frame = CGRect(x: self.view.frame.width - 160,
-                          y: 60,
-                          width: 150,
-                          height: 30)
-        qX.setTitle("取消添加上一个点", for: UIControlState.normal)
-        qX.addTarget(self, action: #selector(FXViewController.qXAddP), for:.touchUpInside)
-        self.view.addSubview(qX)
+        initButton(title: "取消添加上一个点",
+                   x: self.view.frame.width - 160,
+                   y: 60,
+                   width: 150,
+                   height: 30,
+                   function: #selector(FXViewController.qXAddP))
         
-        let ne = UIButton(type: .system)
-        ne.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                          y: 60,
-                          width: 100,
-                          height: 30)
-        ne.setTitle("下一步", for: UIControlState.normal)
-        ne.addTarget(self, action: #selector(FXViewController.nextView), for:.touchUpInside)
-        self.view.addSubview(ne)
+        initButton(title: "下一步",
+                   x: self.view.frame.width * 0.5 - 50,
+                   y: 60,
+                   width: 100,
+                   height: 30,
+                   function: #selector(FXViewController.nextView))
         
         //侧面的数据分析
         CM()
         
-        //底面的数据分析
-        //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
-        matrixDM = Matrix<Bool>(rows: Int(边缘检测后的底面!.size.width / 2),
-                                columns: Int(边缘检测后的底面!.size.height / 2),
-                                example: false)
-        
         start = CACurrentMediaTime()
-        //取样间隔为2 先列后行
-        for i in stride(from: 0, to: Int(边缘检测后的底面!.size.width) - 1, by: 2) {
-            for j in stride(from: 0, to: Int(边缘检测后的底面!.size.height) - 1, by: 2) {
-                //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
-                if 边缘检测后的底面!.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
-                    //第二层门槛，起到medianBlur(中值滤波)的作用
-                    //mean 记录以一点为中心周围25个点的灰度平均值
-                    var mean: CGFloat = 0
-                    for m in (i - 2)...(i + 2) {
-                        for n in (j - 2)...(j + 2) {
-                            mean += 边缘检测后的底面!.getPixelColor(pos: CGPoint(x: m, y: n)).y
-                        }
-                    }
-                    
-                    mean /= 25
-                    
-                    if mean >= 0.3 {
-                        //记录图片的信息到转置矩阵 前为行数后为列数
-                        matrixDM![i / 2, (Int(边缘检测后的底面!.size.height) - 1 - j) / 2] = true
-                    }
-                }
-                
-            }
-        }
-        
-        //缩小底面的矩阵，同侧面的注释
-        var rowMinDM: Int = 0
-        var rowMaxDM: Int = 0
-        var columnMinDM: Int = 0
-        var columnMaxDM: Int = 0
-        
-        let seekRowMinDM = {
-            for i in 0..<matrixDM!.rows {
-                for j in 0..<matrixDM!.columns {
-                    if matrixDM![i,j] {
-                        rowMinDM = i
-                        return
-                    }
-                }
-            }
-        }
-        
-        let seekRowMaxDM = {
-            for i in (0..<matrixDM!.rows).reversed() {
-                for j in 0..<matrixDM!.columns {
-                    if matrixDM![i,j] {
-                        rowMaxDM = i
-                        return
-                    }
-                }
-            }
-        }
-        
-        let seekColumnMinDM = {
-            for i in 0..<matrixDM!.columns {
-                for j in 0..<matrixDM!.rows {
-                    if matrixDM![j,i] {
-                        columnMinDM = i
-                        return
-                    }
-                }
-            }
-        }
-        
-        let seekColumnMaxDM = {
-            for i in (0..<matrixDM!.columns).reversed() {
-                for j in 0..<matrixDM!.rows {
-                    if matrixDM![j,i] {
-                        columnMaxDM = i
-                        return
-                    }
-                }
-            }
-        }
-        
-        //等待指示
-        //basicOperationCMOne() 和 下面的代码都完成工作才进行下一步任务
-        //之后
-        //basicOperationDMOne() 和 下面的代码都完成工作才进行下一步任务
-        var waitDMOne: Bool = false
-        var waitDMTwo: Bool = false
-        
-        func basicOperationDMOne() {
-            //        第一步：创建Operation
-            let op = Operation.init()
-            //        第二步：把要执行的代码放入operation中
-            op.completionBlock = {
-                
-                seekRowMaxDM()
-                seekColumnMaxDM()
-                waitDMTwo = true
-                
-            }
-            //        第三步：创建OperationQueue
-            let opQueue = OperationQueue.init()
-            //        第四步：把Operation加入到线程中
-            opQueue.addOperation(op)
-        }
-        
-        basicOperationDMOne()
-        
-        seekRowMinDM()
-        seekColumnMinDM()
-        waitDMOne = true
-        while !waitDMOne || !waitDMTwo {
-            //等待
-        }
-        waitDMOne = false
-        waitDMTwo = false
-        
-        var newMatrixDM: Matrix<Bool>? = nil
-        newMatrixDM = Matrix<Bool>(rows: rowMaxDM - rowMinDM + 1,
-                                   columns: columnMaxDM - columnMinDM + 1,
-                                   example: false)
-        
-        for i in 0..<newMatrixDM!.rows {
-            for j in 0..<newMatrixDM!.columns {
-                newMatrixDM![i,j] = matrixDM![i + rowMinDM, j + columnMinDM]
-            }
-        }
-        
-        matrixDM = newMatrixDM
-        newMatrixDM = nil
+        //二维矩阵储存：像素化的图片再经筛选后的点
+        //底面
+        var matrixDM: Matrix<Bool>? = CreateNewMatrix(initMatrix(边缘检测后的底面!))
         
         print("记录二维矩阵")
         print(CACurrentMediaTime() - start)
@@ -573,7 +441,10 @@ class FXViewController: UIViewController {
         print(1)
         print(CACurrentMediaTime() - start)
         
-        func basicOperationDMTwo() {
+        var waitOne = false
+        var waitTwo = false
+        
+        func basicOperation() {
             //        第一步：创建Operation
             let op = Operation.init()
             //        第二步：把要执行的代码放入operation中
@@ -603,7 +474,7 @@ class FXViewController: UIViewController {
                         }
                     }
                 }
-                waitDMTwo = true
+                waitTwo = true
             }
             //        第三步：创建OperationQueue
             let opQueue = OperationQueue.init()
@@ -611,7 +482,7 @@ class FXViewController: UIViewController {
             opQueue.addOperation(op)
         }
         
-        basicOperationDMTwo()
+        basicOperation()
         
         for j in 0..<matrixDM!.columns {
             //上纵向筛选有点的列,并记录坐标
@@ -638,12 +509,12 @@ class FXViewController: UIViewController {
             }
         }
         
-        waitDMOne = true
-        while !waitDMOne || !waitDMTwo {
+        waitOne = true
+        while !waitOne || !waitTwo {
             //等待
         }
-        waitDMOne = false
-        waitDMTwo = false
+        waitOne = false
+        waitTwo = false
         
         //CGPoint数组排序
         arraySZ!.sort() { $1.y > $0.y }
@@ -694,7 +565,7 @@ class FXViewController: UIViewController {
             }
             return false
         }
-        //添加点         //注：此函数在本文件里为通用函数
+        //添加点
         func addPoint(_ p: CGPoint) {
             if !checkP(p) {
                 myCGPointArray!.append(MyCGPoint(x: p.x, y: p.y, ed: false))
@@ -851,21 +722,10 @@ class FXViewController: UIViewController {
         while !waitZ1 || !waitZ2 {
             //等待
         }
-        
-        print("~~~")
-        for i in 0..<widthArray.count {
-            print(widthArray[i])
-        }
-        print("~~~")
-        print(xMax!)
-        print(yMax!)
-
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
 }

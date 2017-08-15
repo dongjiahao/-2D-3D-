@@ -136,11 +136,7 @@
 		8C2F06321EBED091001E79A7 /* 作死 */ = {
 			isa = PBXGroup;
 			children = (
-				8C2F06331EBED091001E79A7 /* AppDelegate.swift */,
-				8C115C0F1EC01F9D0074A66C /* File.swift */,
-				8C8574661F4157A60011B11D /* StructFile.swift */,
-				8C8574641F4157240011B11D /* ClassFile.swift */,
-				8C8574621F4156B50011B11D /* ErrorHandlingFile.swift */,
+				8C6064121F4283E400A3896E /* File */,
 				8C8574601F4131BA0011B11D /* MenuTableViewController.swift */,
 				8C2F06351EBED091001E79A7 /* ViewController.swift */,
 				8C115C111EC0241A0074A66C /* SobelEdgeDetection.swift */,
@@ -174,6 +170,18 @@
 				8C2F06551EBED091001E79A7 /* Info.plist */,
 			);
 			path = "作死UITests";
+			sourceTree = "<group>";
+		};
+		8C6064121F4283E400A3896E /* File */ = {
+			isa = PBXGroup;
+			children = (
+				8C2F06331EBED091001E79A7 /* AppDelegate.swift */,
+				8C115C0F1EC01F9D0074A66C /* File.swift */,
+				8C8574661F4157A60011B11D /* StructFile.swift */,
+				8C8574641F4157240011B11D /* ClassFile.swift */,
+				8C8574621F4156B50011B11D /* ErrorHandlingFile.swift */,
+			);
+			name = File;
 			sourceTree = "<group>";
 		};
 		E2510B6A8563B1E6CE887A34 /* Frameworks */ = {

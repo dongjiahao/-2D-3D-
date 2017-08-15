@@ -15,11 +15,6 @@ var 底面: UIImage?
 var 边缘检测后的底面: UIImage?
 var 侧面: UIImage?
 var 边缘检测后的侧面: UIImage?
-//二维矩阵储存：像素化的图片再经筛选后的点
-//底面
-var matrixDM: Matrix<Bool>? = nil
-//侧面
-var matrixCM: Matrix<Bool>? = nil
 //单链表，用来储存底面顶点顺序
 var list: List? = List()
 //时间测试

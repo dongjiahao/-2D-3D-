@@ -49,44 +49,33 @@ class ViewController: SelectTheImageUIViewController {
         
         if flag {
             // 保存图片到系统相册
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: 底面!)
-            }, completionHandler: { (isSuccess: Bool, error: NSError?) in
-                if isSuccess {
-                    print("保存成功!")
-                } else {
-                    print("保存失败：", error!.localizedDescription)
-                }
-            } as? (Bool, Error?) -> Void)
-            flag = false
+            SavePicture(底面!)
         }
         
         //图片控制器退出
         picker.dismiss(animated: true, completion: {
             () -> Void in
         })
+        
+        flag = false
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let select = UIButton(type: .system)
-        select.frame = CGRect(x: 16,
-                              y: 72,
-                              width: 100,
-                              height: 30)
-        select.setTitle("选择图片", for: UIControlState.normal)
-        select.addTarget(self, action: #selector(ViewController.selector), for:.touchUpInside)
-        self.view.addSubview(select)
+        initButton(title: "选择图片",
+                   x: 16,
+                   y: 72,
+                   width: 100,
+                   height: 30,
+                   function: #selector(ViewController.selector))
         
-        let next = UIButton(type: .system)
-        next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                            y: 72,
-                            width: 100,
-                            height: 30)
-        next.setTitle("下一步", for: UIControlState.normal)
-        next.addTarget(self, action: #selector(ViewController.theNextStep), for:.touchUpInside)
-        self.view.addSubview(next)
+        initButton(title: "下一步",
+                   x: self.view.frame.width * 0.5 - 50,
+                   y: 72,
+                   width: 100,
+                   height: 30,
+                   function: #selector(ViewController.theNextStep))
         
         self.view.addSubview(imageView)
         

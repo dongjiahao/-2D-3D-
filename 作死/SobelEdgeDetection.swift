@@ -39,9 +39,9 @@ class SobelEdgeDetection: FilterUIViewController {
         
         let next = JumpButton(type: .system)
         next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                            y: 10,
+                            y: 20,
                             width: 100,
-                            height: 50)
+                            height: 30)
         next.setTitle("下一步", for: UIControlState.normal)
         next.string = "CeMian"
         next.addTarget(self, action: #selector(SobelEdgeDetection.jump(_ :)), for:.touchUpInside)
@@ -62,15 +62,13 @@ class SobelEdgeDetection: FilterUIViewController {
 //        xuanZhuan.setTitle("顺时针旋转90°后进入下一步", for: UIControlState.normal)
 //        xuanZhuan.addTarget(self, action: #selector(SobelEdgeDetection.xZBianHuan), for:.touchUpInside)
 //        self.view.addSubview(xuanZhuan)
-        
-        // Do any additional setup after loading the view.
+
     }
     
     
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
 }

@@ -43,15 +43,7 @@ class CeMian: SelectTheImageUIViewController {
         imageView.image = 侧面
         
         if flag {
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: 侧面!)
-            }, completionHandler: { (isSuccess: Bool, error: NSError?) in
-                if isSuccess {
-                    print("保存成功!")
-                } else {
-                    print("保存失败：", error!.localizedDescription)
-                }
-            } as? (Bool, Error?) -> Void)
+            SavePicture(侧面!)
             flag = false
         }
         
@@ -63,23 +55,19 @@ class CeMian: SelectTheImageUIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let select = UIButton(type: .system)
-        select.frame = CGRect(x: 16,
-                              y: 20,
-                              width: 100,
-                              height: 30)
-        select.setTitle("选择图片", for: UIControlState.normal)
-        select.addTarget(self, action: #selector(CeMian.selector), for:.touchUpInside)
-        self.view.addSubview(select)
+        initButton(title: "选择图片",
+                   x: 16,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   function: #selector(CeMian.selector))
         
-        let next = UIButton(type: .system)
-        next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                            y: 20,
-                            width: 100,
-                            height: 30)
-        next.setTitle("下一步", for: UIControlState.normal)
-        next.addTarget(self, action: #selector(CeMian.theNextStep), for:.touchUpInside)
-        self.view.addSubview(next)
+        initButton(title: "下一步",
+                   x: self.view.frame.width * 0.5 - 50,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   function: #selector(CeMian.theNextStep))
         
         self.view.addSubview(imageView)
         

@@ -13,14 +13,45 @@ import Photos
 //类的定义及声明，以及类的扩展
 
 extension UIViewController {
+    //界面跳转函数
     func skip(_ string: String) {
         let myStoryBoard = self.storyboard
         let anotherView: UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: string))! as UIViewController
         self.present(anotherView, animated: true, completion: nil)
     }
+    
+    //创建常规按钮的函数
+    func initButton(title: String,
+                    x: CGFloat,
+                    y: CGFloat,
+                    width: CGFloat,
+                    height: CGFloat,
+                    function: Selector) {           //点击后调用的函数
+        let button = UIButton(type: .system)
+        button.frame = CGRect(x: x,
+                              y: y,
+                              width: width,
+                              height: height)
+        button.setTitle(title, for: UIControlState.normal)
+        button.addTarget(self, action: function, for:.touchUpInside)
+        self.view.addSubview(button)
+    }
+    
+    //保存图片函数
+    func SavePicture(_ image: UIImage) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }, completionHandler: { (isSuccess: Bool, error: NSError?) in
+            if isSuccess {
+                print("保存成功!")
+            } else {
+                print("保存失败：", error!.localizedDescription)
+            }
+        } as? (Bool, Error?) -> Void)
+    }
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -92,11 +123,11 @@ class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerD
     }
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 class FilterUIViewController: UIViewController {
     
-    //gaussianBlurFilter
+    //gaussianBlurFilter高斯模糊滤镜
     func gBFilter(inputImage: UIImage,        //要处理的图片，和处理强度
                   strength: CGFloat) -> UIImage {
         
@@ -115,7 +146,7 @@ class FilterUIViewController: UIViewController {
         return gaussianBlurFilter.imageFromCurrentFramebuffer()
     }
     
-    //edgeDetectionFilter
+    //edgeDetectionFilter边缘检测滤镜
     func eDFilter(inputImage: UIImage,        //要处理的图片，和处理强度
                   strength: CGFloat) -> UIImage {
         
@@ -136,15 +167,7 @@ class FilterUIViewController: UIViewController {
     
     func sharePhoto(_ button: ImageButton) {
         //保存图片
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAsset(from: button.image!)
-        }, completionHandler: { (isSuccess: Bool, error: NSError?) in
-            if isSuccess {
-                print("保存成功!")
-            } else {
-                print("保存失败：", error!.localizedDescription)
-            }
-            } as? (Bool, Error?) -> Void)
+        SavePicture(button.image!)
     }
     
     func jump(_ button: JumpButton) {
@@ -152,19 +175,19 @@ class FilterUIViewController: UIViewController {
     }
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 final class ImageButton: UIButton {
     var image: UIImage? = nil
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 final class JumpButton: UIButton {
     var string: String = ""
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 //可以记录自己坐标及状态的 Button
 final class MyButton: UIButton {
@@ -209,7 +232,7 @@ final class MyButton: UIButton {
     
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 extension UIImage{
     /**
@@ -238,7 +261,7 @@ extension UIImage{
     }
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 final class ListNode {
     //定义节点
@@ -250,7 +273,7 @@ final class ListNode {
     }
 }
 
-//————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————————————————————————————————————————————————————————————————————
 
 final class List {
     //定义链表

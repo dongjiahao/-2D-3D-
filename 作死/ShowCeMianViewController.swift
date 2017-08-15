@@ -13,26 +13,8 @@ import Photos
 //侧面边缘检测
 class ShowCeMianViewController: FilterUIViewController {
     
-    //    func xZBianHuan() {
-    //        //翻转图片的方向
-    //        let flipImageOrientation = (s.imageOrientation.rawValue + 3) % 8
-    //        //翻转图片
-    //        s = UIImage(cgImage: s.cgImage!,
-    //                    scale: s.scale,
-    //                    orientation: UIImageOrientation(rawValue: flipImageOrientation)!
-    //        )
-    ////        print(image.size.width)
-    ////        print(image.size.height)
-    ////        print(s.size.width)
-    ////        print(s.size.height)
-    //        showImage()
-    //    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        var imageView: GPUImageView? = GPUImageView(frame: self.view.frame)
-//        self.view = imageView
         
         边缘检测后的侧面 = eDFilter(inputImage: gBFilter(inputImage: 侧面!, strength: 4), strength: 7)
         侧面 = nil
@@ -57,31 +39,10 @@ class ShowCeMianViewController: FilterUIViewController {
         share.addTarget(self, action: #selector(ShowCeMianViewController.sharePhoto(_ :)), for:.touchUpInside)
         self.view.addSubview(share)
         
-        //        let xuanZhuan: UIButton = UIButton(type: .system)
-        //        xuanZhuan.frame = CGRect(x: 10, y: 70, width: 200, height: 50)
-        //        xuanZhuan.setTitle("顺时针旋转90°后进入下一步", for: UIControlState.normal)
-        //        xuanZhuan.addTarget(self, action: #selector(SobelEdgeDetection.xZBianHuan), for:.touchUpInside)
-        //        self.view.addSubview(xuanZhuan)
-        
-        // Do any additional setup after loading the view.
     }
-    
-    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
