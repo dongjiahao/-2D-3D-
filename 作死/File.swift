@@ -23,3 +23,8 @@ var start: CFAbsoluteTime = 0
 var rateHW: CGFloat?
 //记录侧面所取宽度的数组
 var widthArray: [CGFloat] = []
+//指定 Button 的类型
+enum ButtonType {
+    case image
+    case jump
+}

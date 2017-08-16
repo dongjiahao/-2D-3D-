@@ -53,7 +53,7 @@ extension UIViewController {
 
 //——————————————————————————————————————————————————————————————————————————————————————————
 
-class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class SelectTheImageUIViewController: UIViewController {
     
     //用来展示所选底面的UIImageView
     let imageView = UIImageView()
@@ -65,6 +65,28 @@ class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerD
     
     //是否调用过照相机的标记，调用过照相机为 true，反之为 false
     var flag: Bool = false
+    
+    var selectorController: UIAlertController {
+        let controller = UIAlertController(title: nil,
+                                           message: nil,
+                                           preferredStyle: .actionSheet)
+        // 取消按钮
+        controller.addAction(UIAlertAction(title: "取消",
+                                           style: .cancel,
+                                           handler: nil))
+        // 拍照选择
+        controller.addAction(UIAlertAction(title: "拍照选择",
+                                           style: .default) { action in self.fromCamera() } )
+        // 相册选择
+        controller.addAction(UIAlertAction(title: "相册选择",
+                                           style: .default) { action in self.fromPhotoLibrary() } )
+        return controller
+    }
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————
+
+extension SelectTheImageUIViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //照相机调用函数
     func fromCamera() {
@@ -105,22 +127,6 @@ class SelectTheImageUIViewController: UIViewController, UIImagePickerControllerD
         }
     }
     
-    var selectorController: UIAlertController {
-        let controller = UIAlertController(title: nil,
-                                           message: nil,
-                                           preferredStyle: .actionSheet)
-        // 取消按钮
-        controller.addAction(UIAlertAction(title: "取消",
-                                           style: .cancel,
-                                           handler: nil))
-        // 拍照选择
-        controller.addAction(UIAlertAction(title: "拍照选择",
-                                           style: .default) { action in self.fromCamera() } )
-        // 相册选择
-        controller.addAction(UIAlertAction(title: "相册选择",
-                                           style: .default) { action in self.fromPhotoLibrary() } )
-        return controller
-    }
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————
@@ -173,6 +179,40 @@ class FilterUIViewController: UIViewController {
     func jump(_ button: JumpButton) {
         skip(button.string)
     }
+    
+    //创建常规和特殊按钮的函数
+    func initButton(title: String,
+                    x: CGFloat,
+                    y: CGFloat,
+                    width: CGFloat,
+                    height: CGFloat,
+                    tpye: ButtonType,               //Button 的类型
+                    details: Any,                   //细节内容
+                    function: Selector) {           //点击后调用的函数
+        switch tpye {
+        case .image:
+            let newButton = ImageButton(type: .system)
+            newButton.image = (details as! UIImage)
+            newButton.frame = CGRect(x: x,
+                                     y: y,
+                                     width: width,
+                                     height: height)
+            newButton.setTitle(title, for: UIControlState.normal)
+            newButton.addTarget(self, action: function, for:.touchUpInside)
+            self.view.addSubview(newButton)
+        case .jump:
+            let newButton = JumpButton(type: .system)
+            newButton.string = details as! String
+            newButton.frame = CGRect(x: x,
+                                     y: y,
+                                     width: width,
+                                     height: height)
+            newButton.setTitle(title, for: UIControlState.normal)
+            newButton.addTarget(self, action: function, for:.touchUpInside)
+            self.view.addSubview(newButton)
+        }
+    }
+    
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————

@@ -22,7 +22,7 @@ struct MyCGPoint {
 struct Matrix<Element> {
     //任意元素类型二维矩阵
     let rows: Int, columns: Int
-    var grid: [Element]
+    private var grid: [Element]
     var example: Element
     init(rows: Int,
          columns: Int,

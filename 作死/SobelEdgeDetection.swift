@@ -37,25 +37,23 @@ class SobelEdgeDetection: FilterUIViewController {
         边缘检测后的底面 = eDFilter(inputImage: gBFilter(inputImage: 底面!, strength: 2), strength: 4)
         底面 = nil
         
-        let next = JumpButton(type: .system)
-        next.frame = CGRect(x: self.view.frame.width * 0.5 - 50,
-                            y: 20,
-                            width: 100,
-                            height: 30)
-        next.setTitle("下一步", for: UIControlState.normal)
-        next.string = "CeMian"
-        next.addTarget(self, action: #selector(SobelEdgeDetection.jump(_ :)), for:.touchUpInside)
-        self.view.addSubview(next)
+        initButton(title: "下一步",
+                   x: self.view.frame.width * 0.5 - 50,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   tpye: .jump,
+                   details: "CeMian",
+                   function: #selector(SobelEdgeDetection.jump(_ :)))
         
-        let share = ImageButton(type: .system)
-        share.frame = CGRect(x: self.view.frame.width - 116,
-                             y: 20,
-                             width: 100,
-                             height: 30)
-        share.setTitle("保存图片", for: UIControlState.normal)
-        share.image = 边缘检测后的底面
-        share.addTarget(self, action: #selector(SobelEdgeDetection.sharePhoto(_ :)), for:.touchUpInside)
-        self.view.addSubview(share)
+        initButton(title: "保存图片",
+                   x: self.view.frame.width - 116,
+                   y: 20,
+                   width: 100,
+                   height: 30,
+                   tpye: .image,
+                   details: 边缘检测后的底面!,
+                   function: #selector(SobelEdgeDetection.sharePhoto(_ :)))
         
 //        let xuanZhuan: UIButton = UIButton(type: .system)
 //        xuanZhuan.frame = CGRect(x: 10, y: 70, width: 200, height: 50)
