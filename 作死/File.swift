@@ -11,10 +11,10 @@ import UIKit
 //全局变量定义及声明
 
 //就是想体验一把中文变量，没别的想法。。。
-var 底面: UIImage?
-var 边缘检测后的底面: UIImage?
-var 侧面: UIImage?
-var 边缘检测后的侧面: UIImage?
+weak var 底面: UIImage?
+weak var 边缘检测后的底面: UIImage?
+weak var 侧面: UIImage?
+weak var 边缘检测后的侧面: UIImage?
 //单链表，用来储存底面顶点顺序
 var list: List? = List()
 //时间测试

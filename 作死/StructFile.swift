@@ -14,7 +14,7 @@ import UIKit
 struct MyCGPoint {
     var x: CGFloat
     var y: CGFloat
-    var ed: Bool
+    var e: Bool
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————
