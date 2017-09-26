@@ -28,3 +28,4 @@ enum ButtonType {
     case image
     case jump
 }
+

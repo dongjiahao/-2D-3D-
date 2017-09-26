@@ -13,7 +13,7 @@ import Photos
 class ViewController: SelectTheImageUIViewController {
 
     //下一步
-    func theNextStep() {
+    @objc func theNextStep() {
         //错误处理
         do {
             //抛出错误

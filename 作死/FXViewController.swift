@@ -23,7 +23,7 @@ class FXViewController: UIViewController {
     var waitZ2 = false
     
     //跳转到下一个页面
-    func nextView() {
+    @objc func nextView() {
         do {
             try areThereEnoughPoints(num)
             while !waitZ2 {
@@ -44,7 +44,7 @@ class FXViewController: UIViewController {
     }
     
     //点击为选中状态
-    func awaitOrders(_ button: MyButton) {
+    @objc func awaitOrders(_ button: MyButton) {
         if allow && button.blue! {
             button.yellow = true
             candidate = button
@@ -53,21 +53,21 @@ class FXViewController: UIViewController {
     }
     
     //取消选中
-    func repeal() {
+    @objc func repeal() {
         candidate?.blue = true
         candidate = nil
         allow = true
     }
     
     //移除点
-    func remove() {
+    @objc func remove() {
         candidate?.removeFromSuperview()
         candidate = nil
         allow = true
     }
     
     //添加顶点
-    func addP() {
+    @objc func addP() {
         do {
             try isThereAnPoint(candidate)
             list!.appendToHead(val: candidate!)
@@ -89,7 +89,7 @@ class FXViewController: UIViewController {
     }
     
     //取消添加上一个点
-    func qXAddP() {
+    @objc func qXAddP() {
         if num > 0 {
             list!.head?.val.blue = true
             list!.head = list!.head?.next
@@ -98,14 +98,15 @@ class FXViewController: UIViewController {
     }
     
     func initMatrix(_ image: UIImage) -> Matrix<Bool> {
+        let spacing = 3  //间距
         //面的数据分析
         //记录侧面各点信息的矩阵，行数与图片宽度相关，列数与图片高度相关，为的是之后将图片信息转置（旋转90°）
-        var matrix = Matrix<Bool>(rows: Int(image.size.width / 2),
-                                columns: Int(image.size.height / 2),
+        var matrix = Matrix<Bool>(rows: Int(image.size.width / CGFloat(spacing)),
+                                columns: Int(image.size.height / CGFloat(spacing)),
                                 example: false)
         //取样间隔为2 先列后行
-        for i in stride(from: 0, to: Int(image.size.width) - 1, by: 2) {
-            for j in stride(from: 0, to: Int(image.size.height) - 1, by: 2) {
+        for i in stride(from: 0, to: Int(image.size.width) - 1, by: spacing) {
+            for j in stride(from: 0, to: Int(image.size.height) - 1, by: spacing) {
                 //第一层门槛，只有灰度大于某一数值的像素点会被进一步处理
                 if image.getPixelColor(pos: CGPoint(x: i, y: j)).y >= 0.6{
                     //第二层门槛，起到medianBlur(中值滤波)的作用
@@ -121,7 +122,7 @@ class FXViewController: UIViewController {
                     
                     if mean >= 0.3 {
                         //记录图片的信息到转置矩阵 前为行数后为列数
-                        matrix[i / 2, (Int(image.size.height) - 1 - j) / 2] = true
+                        matrix[i / spacing, (Int(image.size.height) - 1 - j) / spacing] = true
                     }
                 }
                 

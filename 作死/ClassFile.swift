@@ -14,14 +14,14 @@ import Photos
 
 extension UIViewController {
     //界面跳转函数
-    func skip(_ string: String) {
+    public func skip(_ string: String) {
         let myStoryBoard = self.storyboard
         let anotherView: UIViewController = (myStoryBoard?.instantiateViewController(withIdentifier: string))! as UIViewController
         self.present(anotherView, animated: true, completion: nil)
     }
     
     //创建常规按钮的函数
-    func initButton(title: String,
+    public func initButton(title: String,
                     x: CGFloat,
                     y: CGFloat,
                     width: CGFloat,
@@ -38,7 +38,7 @@ extension UIViewController {
     }
     
     //保存图片函数
-    func SavePicture(_ image: UIImage) {
+    public func SavePicture(_ image: UIImage) {
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.creationRequestForAsset(from: image)
         }, completionHandler: { (isSuccess: Bool, error: NSError?) in
@@ -53,20 +53,20 @@ extension UIViewController {
 
 //——————————————————————————————————————————————————————————————————————————————————————————
 
-class SelectTheImageUIViewController: UIViewController {
+public class SelectTheImageUIViewController: UIViewController {
     
     //用来展示所选底面的UIImageView
-    let imageView = UIImageView()
+    public let imageView = UIImageView()
     
     //选择器调用函数，三个选项“拍照选择”、“相册选择”、“取消”，用于选择底面的图片
-    func selector() {
+    @objc public func selector() {
         present(selectorController, animated: true, completion: nil)
     }
     
     //是否调用过照相机的标记，调用过照相机为 true，反之为 false
-    var flag: Bool = false
+    public var flag: Bool = false
     
-    var selectorController: UIAlertController {
+    public var selectorController: UIAlertController {
         let controller = UIAlertController(title: nil,
                                            message: nil,
                                            preferredStyle: .actionSheet)
@@ -89,7 +89,7 @@ class SelectTheImageUIViewController: UIViewController {
 extension SelectTheImageUIViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //照相机调用函数
-    func fromCamera() {
+    public func fromCamera() {
         //判断设置是否支持照相机
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             let picker = UIImagePickerController()
@@ -109,7 +109,7 @@ extension SelectTheImageUIViewController: UIImagePickerControllerDelegate, UINav
     }
     
     //相册调用函数
-    func fromPhotoLibrary() {
+    public func fromPhotoLibrary() {
         //判断设置是否支持图片库
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
             //初始化图片控制器
@@ -131,10 +131,10 @@ extension SelectTheImageUIViewController: UIImagePickerControllerDelegate, UINav
 
 //——————————————————————————————————————————————————————————————————————————————————————————
 
-class FilterUIViewController: UIViewController {
+public class FilterUIViewController: UIViewController {
     
     //gaussianBlurFilter高斯模糊滤镜
-    func gBFilter(inputImage: UIImage,        //要处理的图片，和处理强度
+    public func gBFilter(inputImage: UIImage,        //要处理的图片，和处理强度
                   strength: CGFloat) -> UIImage {
         
         var imagePicture = GPUImagePicture()
@@ -153,7 +153,7 @@ class FilterUIViewController: UIViewController {
     }
     
     //edgeDetectionFilter边缘检测滤镜
-    func eDFilter(inputImage: UIImage,        //要处理的图片，和处理强度
+    public func eDFilter(inputImage: UIImage,        //要处理的图片，和处理强度
                   strength: CGFloat) -> UIImage {
         
         var imagePicture = GPUImagePicture()
@@ -171,12 +171,12 @@ class FilterUIViewController: UIViewController {
         return edgeDetectionFilter.imageFromCurrentFramebuffer()
     }
     
-    func sharePhoto(_ button: ImageButton) {
+    @objc func sharePhoto(_ button: ImageButton) {
         //保存图片
         SavePicture(button.image!)
     }
     
-    func jump(_ button: JumpButton) {
+    @objc func jump(_ button: JumpButton) {
         skip(button.string)
     }
     
@@ -233,9 +233,9 @@ final class JumpButton: UIButton {
 final class MyButton: UIButton {
     
     //该 button 所代表点的坐标
-    var p: CGPoint? = nil
+    public var p: CGPoint? = nil
     //蓝色为备选状态，点击可变为黄色的选中状态
-    var blue: Bool? {
+    public var blue: Bool? {
         didSet {
             if self.blue! {
                 self.yellow = false
@@ -248,7 +248,7 @@ final class MyButton: UIButton {
     //黄色为选中状态，点击 “添加顶点” Button 即可将其添加为顶点，变为红色的选定状态
     //                 “取消选中” Button 即可取消选中状态，变为蓝色的备选状态
     //                 “删除点” Button 即可将改 Button 从 View 中移除
-    var yellow: Bool? {
+    public var yellow: Bool? {
         didSet {
             if self.yellow! {
                 self.blue = false
@@ -259,7 +259,7 @@ final class MyButton: UIButton {
         }
     }
     //红色为选定状态，点击“取消添加上一个点” Button 即可取消最近一次添加为顶点的点的选定状态，变为蓝色
-    var red: Bool? {
+    public var red: Bool? {
         didSet {
             if self.red! {
                 self.yellow = false
@@ -282,7 +282,7 @@ extension UIImage{
      
      - returns: 不透明度，颜色值，灰度
      */
-    func getPixelColor(pos: CGPoint) -> (alpha: CGFloat, // 不透明度
+    public func getPixelColor(pos: CGPoint) -> (alpha: CGFloat, // 不透明度
         red: CGFloat,   // 红
         green: CGFloat, // 绿
         blue: CGFloat,  // 蓝
@@ -305,8 +305,8 @@ extension UIImage{
 
 final class ListNode {
     //定义节点
-    var val: MyButton
-    var next: ListNode?
+    public var val: MyButton
+    public var next: ListNode?
     init(_ val: MyButton) {
         self.val = val
         self.next = nil
@@ -317,10 +317,10 @@ final class ListNode {
 
 final class List {
     //定义链表
-    var head: ListNode?
-    var tail: ListNode?
+    public var head: ListNode?
+    public var tail: ListNode?
     // 尾插法
-    func appendToTail(val: MyButton) {
+    public func appendToTail(val: MyButton) {
         if tail == nil {
             tail = ListNode(val)
             head = tail
@@ -330,7 +330,7 @@ final class List {
         }
     }
     // 头插法
-    func appendToHead(val: MyButton) {
+    public func appendToHead(val: MyButton) {
         if head == nil {
             head = ListNode(val)
             tail = head

@@ -62,8 +62,6 @@ class SobelEdgeDetection: FilterUIViewController {
 //        self.view.addSubview(xuanZhuan)
 
     }
-    
-    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

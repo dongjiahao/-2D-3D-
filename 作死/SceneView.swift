@@ -150,7 +150,7 @@ class SceneView: UIViewController {
         
     }
     
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+    @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
         // 声明 the SCNView
         let scnView = self.view as! SCNView
         

@@ -11,19 +11,19 @@ import UIKit
 //结构体的定义及声明
 
 //记录自己是否被操作过的点
-struct MyCGPoint {
-    var x: CGFloat
-    var y: CGFloat
-    var e: Bool
+public struct MyCGPoint {
+    public var x: CGFloat
+    public var y: CGFloat
+    public var e: Bool
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————
 
-struct Matrix<Element> {
+public struct Matrix<Element> {
     //任意元素类型二维矩阵
-    let rows: Int, columns: Int
+    public let rows: Int, columns: Int
     private var grid: [Element]
-    var example: Element
+    public var example: Element
     init(rows: Int,
          columns: Int,
          example: Element) {
@@ -33,7 +33,7 @@ struct Matrix<Element> {
         grid = Array<Element>(repeating: example,
                               count: rows * columns)
     }
-    func indexIsValidForRow(_ row: Int,
+    private func indexIsValidForRow(_ row: Int,
                             _ column: Int) -> Bool {
         return row >= 0 && row < rows && column >= 0 && column < columns
     }

@@ -12,7 +12,7 @@ import Photos
 //获取侧面
 class CeMian: SelectTheImageUIViewController {
     
-    func theNextStep() {
+    @objc func theNextStep() {
         do {
             try isThereAnImage(侧面)
             skip("ShowCeMianViewController")
